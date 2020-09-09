@@ -55,5 +55,5 @@ Rice, G., Wirjanto, T., Zhao, Y. (2020). Functional GARCH-X model with an applic
 \seealso{
 \code{\link{basis.pp}} \code{\link{basis.tfpca}} \code{\link{basis.pf}}
 
-\code{\link{basis.pp}} \code{\link{basis.tfpca}} \code{\link{basis.pf}}
+\code{\link{basis.pp}} \code{\link{basis.tfpca}} \code{\link{basis.tpf}}
 }

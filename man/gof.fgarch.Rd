@@ -4,33 +4,20 @@
 \alias{gof.fgarch}
 \title{Goodness-of-fit Test for Functional ARCH/GARCH Model}
 \usage{
-gof.fgarch(
-  error_fit,
-  sigma_fit,
-  ortho_basis_matrix,
-  y_2_proj_coefs,
-  sigma_2_proj_coefs,
-  para,
-  K = NULL,
-  pplot = NULL
-)
+gof.fgarch(yd, y_vec, basis, K = NULL, pplot = NULL, max_eval = 10000)
 }
 \arguments{
-\item{error_fit}{the residuals obtained by fitting functional curve data with the Functional ARCH/GARCH model.}
+\item{yd}{A (grid_point) x (number of observations) matrix drawn from N discrete evaluation curves.}
 
-\item{sigma_fit}{the fitted conditional volatility obtained from Functional ARCH/GARCH model.}
+\item{y_vec}{(number of observations) x (number of basis functions) matrix of projections of squared observations.}
 
-\item{ortho_basis_matrix}{the data-driven basis functions that are used to project functional curve data to scalar scores.}
+\item{basis}{The M-dimensional basis functions.}
 
-\item{y_2_proj_coefs}{the projection scores of the functional curve data on data-driven bases.}
+\item{K}{The statistic will be based on H lag autocorrelation coefficients. If it is missing, a default value "K=20" is used.}
 
-\item{sigma_2_proj_coefs}{the projection scores of the conditional volatility curves on data-driven bases.}
+\item{pplot}{An optional argument to compute and plot the P-values as a function of K, K=1,2,...,20. If pplot=1, the p-values will be computed and figured; if it is missing, this step will be skipped.}
 
-\item{para}{the estimated parameter space of the Functional ARCH/GARCH model.}
-
-\item{K}{the statistic will be based on H lag autocorrelation coefficients. If it is missing, a default value "K=20" is used.}
-
-\item{pplot}{an optional argument to compute and plot the P-values as a function of K, K=1,2,...,20. If pplot=1, the p-values will be computed and figured; if it is missing, this step will be skipped.}
+\item{max_eval}{The maximum number of evaluations of the optimization function.}
 }
 \value{
 The P_value of the \eqn{M_{N,K}} statistic.
@@ -44,28 +31,16 @@ The test statistic used is as the same as the \eqn{M_{N,K}} statistic in \code{\
 \examples{
 # generate discrete evaluations of the FARCH process.
 grid_point=50; N=200
-yd = dgp.farch(grid_point, N)
-yd = yd$arch_mat
+yd = dgp.fgarch(grid_point, N)
+yd = yd$garch_mat
 ba = basis.tfpca(yd,M=2)
 basis_est = ba$basis
 # fit the curve data and forecast the conditional volatility with an FGARCH(1,1) model.
 fd = fda::Data2fd(argvals=seq(0,1,len = grid_point),y=yd,fda::create.bspline.basis(nbasis = 32))
 y_inp = basis.score(fd,as.matrix(basis_est[,1]))
-arch1_est = est.fArch(y_inp)
-diag_arch = diagnostic.fGarch(arch1_est,basis_est[,1],yd)
-# get the projection scores of the functional curve data on data-driven bases.
-y2_proj_coefs = diag_arch$yproj
-# get the fitted conditional volatility obtained from the FARCH(1) model.
-sigma_fit = diag_arch$sigma2[,1:N]
-# get the residuals obtained from the FARCH(1) model.
-error_fit = diag_arch$eps
-# get the projection scores of the conditional volatility curves on data-driven bases.
-sigma2_proj_coefs = diag_arch$sigproj
-# get the scalar parameters in the estimated parameter space.
-para = c(as.vector(arch1_est$d),as.vector(arch1_est$As[[1]]))
 
-# test the adequacy of the FARCH(1) model.
-gof.fgarch(error_fit,sigma_fit,basis_est[,1],y2_proj_coefs,sigma2_proj_coefs,para,K=3)
+# test the adequacy of the FGARCH(1,1) model.
+gof.fgarch(yd,y_inp[,1],basis_est[,1],K=3)
 
 }
 \references{

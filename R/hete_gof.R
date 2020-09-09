@@ -208,24 +208,24 @@ fun_hetero <- function (yd, K=NULL, stat_Method, pplot=NULL){
 
 
 
+
+
 #' Goodness-of-fit Test for Functional ARCH/GARCH Model
 #'
 #' @description gof.fgarch function approximates the P-value of the \eqn{M_{N,K}} statistics accounting for the effect of functional GARCH parameter estimation.
 #'
-#' @param error_fit the residuals obtained by fitting functional curve data with the Functional ARCH/GARCH model.
-#' @param sigma_fit the fitted conditional volatility obtained from Functional ARCH/GARCH model.
-#' @param ortho_basis_matrix the data-driven basis functions that are used to project functional curve data to scalar scores.
-#' @param y_2_proj_coefs the projection scores of the functional curve data on data-driven bases.
-#' @param sigma_2_proj_coefs the projection scores of the conditional volatility curves on data-driven bases.
-#' @param para the estimated parameter space of the Functional ARCH/GARCH model.
-#' @param K the statistic will be based on H lag autocorrelation coefficients. If it is missing, a default value "K=20" is used.
-#' @param pplot an optional argument to compute and plot the P-values as a function of K, K=1,2,...,20. If pplot=1, the p-values will be computed and figured; if it is missing, this step will be skipped.
-#'
+#' @param yd A (grid_point) x (number of observations) matrix drawn from N discrete evaluation curves.
+#' @param y_vec (number of observations) x (number of basis functions) matrix of projections of squared observations.
+#' @param basis The M-dimensional basis functions.
+#' @param K The statistic will be based on H lag autocorrelation coefficients. If it is missing, a default value "K=20" is used.
+#' @param pplot An optional argument to compute and plot the P-values as a function of K, K=1,2,...,20. If pplot=1, the p-values will be computed and figured; if it is missing, this step will be skipped.
+#' @param max_eval The maximum number of evaluations of the optimization function.
 #'
 #' @return The P_value of the \eqn{M_{N,K}} statistic.
 #'
 #' @export
 #' @importFrom graphics abline plot
+#' @importFrom nloptr cobyla
 #'
 #' @details
 #' The test statistic used is as the same as the \eqn{M_{N,K}} statistic in \code{\link{fun_hetero}}. However, the asymptotic distribution is adjusted to account for the estimation effect, because the model residual depends on the joint asymptotics of the innovation process and the estimated parameters. We assume that the kernel parameters are consistently estimated by the Least Squares method proposed in Aue et al. (2017). Then, the asymptotic distribution of the statistic \eqn{M_{N,K}} is given in Theorem 3.1 in Rice et al. (2020).
@@ -235,34 +235,128 @@ fun_hetero <- function (yd, K=NULL, stat_Method, pplot=NULL){
 #' @examples
 #' # generate discrete evaluations of the FARCH process.
 #' grid_point=50; N=200
-#' yd = dgp.farch(grid_point, N)
-#' yd = yd$arch_mat
+#' yd = dgp.fgarch(grid_point, N)
+#' yd = yd$garch_mat
 #' ba = basis.tfpca(yd,M=2)
 #' basis_est = ba$basis
 #' # fit the curve data and forecast the conditional volatility with an FGARCH(1,1) model.
 #' fd = fda::Data2fd(argvals=seq(0,1,len = grid_point),y=yd,fda::create.bspline.basis(nbasis = 32))
 #' y_inp = basis.score(fd,as.matrix(basis_est[,1]))
-#' arch1_est = est.fArch(y_inp)
-#' diag_arch = diagnostic.fGarch(arch1_est,basis_est[,1],yd)
-#' # get the projection scores of the functional curve data on data-driven bases.
-#' y2_proj_coefs = diag_arch$yproj
-#' # get the fitted conditional volatility obtained from the FARCH(1) model.
-#' sigma_fit = diag_arch$sigma2[,1:N]
-#' # get the residuals obtained from the FARCH(1) model.
-#' error_fit = diag_arch$eps
-#' # get the projection scores of the conditional volatility curves on data-driven bases.
-#' sigma2_proj_coefs = diag_arch$sigproj
-#' # get the scalar parameters in the estimated parameter space.
-#' para = c(as.vector(arch1_est$d),as.vector(arch1_est$As[[1]]))
 #'
-#' # test the adequacy of the FARCH(1) model.
-#' gof.fgarch(error_fit,sigma_fit,basis_est[,1],y2_proj_coefs,sigma2_proj_coefs,para,K=3)
+#' # test the adequacy of the FGARCH(1,1) model.
+#' gof.fgarch(yd,y_inp[,1],basis_est[,1],K=3)
 #'
 #' @references
 #' Aue, A., Horvath, L., F. Pellatt, D. (2017). Functional generalized autoregressive conditional heteroskedasticity. Journal of Time Series Analysis, 38(1), 3-21.\cr
 #' Rice, G., Wirjanto, T., Zhao, Y. (2020). Tests for conditional heteroscedasticity of functional data. Journal of Time Series Analysis.
 #'
-gof.fgarch <- function(error_fit,sigma_fit,ortho_basis_matrix,y_2_proj_coefs,sigma_2_proj_coefs,para,K=NULL, pplot=NULL){
+gof.fgarch <- function (yd, y_vec, basis, K=NULL, pplot=NULL, max_eval=10000){
+
+  y_vec = t(as.matrix(y_vec))
+  max_eval=5000
+  M = nrow(y_vec)
+  sample_size = ncol(y_vec)
+
+  get_theta=function(theta,M){
+    #first M entries are d
+    d=theta[1:M]
+
+    #Next p*M^2 entries are A, A_inds are indices of A matrix params
+    num_mat_params=(M^2-M*(M-1)/2)
+    A_inds=M+(1:(num_mat_params))
+    B_inds=sfsmisc::last(A_inds)+(1:(num_mat_params))
+
+    theta_A=theta[A_inds]
+    theta_B=theta[B_inds]
+
+    curr_A_vals=theta_A[1:num_mat_params]
+    A=matrix(0,ncol=M,nrow=M)
+    diag(A)=curr_A_vals[1:M]
+    A[lower.tri(A)]=curr_A_vals[(M+1):length(curr_A_vals)]
+    A=t(A)
+    A[lower.tri(A)]=curr_A_vals[(M+1):length(curr_A_vals)]
+
+    #see above comment
+    curr_B_vals=theta_B[1:num_mat_params]
+    B=matrix(0,ncol=M,nrow=M)
+    diag(B)=curr_B_vals[1:M]
+    B[lower.tri(B)]=curr_B_vals[(M+1):length(curr_B_vals)]
+    B=t(B)
+    B[lower.tri(B)]=curr_B_vals[(M+1):length(curr_B_vals)]
+
+    return(list(ds=d,As=A,Bs=B))
+  }
+
+  function_to_minimize2=function(x,data=y_vec){
+    sample_size=ncol(data)
+    M=nrow(data)
+    pam = get_theta(x,M)
+    d=pam$d
+    A=pam$As
+    B=pam$Bs
+    sigma_sq_proj_coefs=matrix(0,M,sample_size)
+    sigma_sq_proj_coefs[,1]=d
+
+    for(i in 2:(sample_size)){
+      first_part=d
+      second_part=0
+      for (l in 1:(i-1)){
+        first_part=first_part+B^(l-1)%*%d
+        second_part=second_part+B^(l-1)%*%(A%*%data[,i-l])}
+      sigma_sq_proj_coefs[,i]=first_part+second_part
+    }
+
+    s_theta=0
+    for (i in 2:sample_size) {s_theta=s_theta+t(data[,i]-sigma_sq_proj_coefs[,i])%*%(data[,i]-sigma_sq_proj_coefs[,i])}
+    r=sum(s_theta)
+    return(r)
+  }
+
+  #nonlinear inequality constraints on parameters
+  eval_g0<-function(x,Mn=M){
+    h <- numeric(2)
+    upb = 1-(10^-20)
+    h[1] <- -(sum(x[(Mn+1):(Mn+Mn^2)])-upb)
+    h[2] <- -(sum(x[(Mn+Mn^2):(Mn+2*Mn^2)])-upb)
+    return(h)
+  }
+  num_params=2*(M^2-M*(M-1)/2)+M
+  stav=c(runif(M,10^-10,(1-10^-10)),runif(num_params-M,0,1))
+  ress=nloptr::cobyla(x0 = stav,fn = function_to_minimize2, lower=c(rep(10^-20,num_params)),
+                      upper=c(rep(1,num_params)),
+                      hin = eval_g0, nl.info = FALSE,
+                      control = list(maxeval=max_eval))
+
+  para=as.numeric(ress$par)
+  pam_hat = get_theta(para,M)
+  d_hat=pam_hat$d
+  A_hat=pam_hat$As
+  B_hat=pam_hat$Bs
+
+  s_fit=matrix(0,M,sample_size)
+  s_fit[,1]=d_hat
+
+  basis = as.matrix(basis)
+  sigma_fit=matrix(0,nrow(basis),sample_size)
+  for (i in 2:sample_size){s_fit[,i]=d_hat+A_hat%*%y_vec[,i-1]+B_hat%*%s_fit[,i-1]}
+  for (i in 1:sample_size){sigma_dfit=0
+  for (j in 1:M) {sigma_dfit=sigma_dfit+s_fit[j,i]*basis[,j]}
+  sigma_fit[,i]=sigma_dfit}
+
+  error_fit=yd/sqrt(abs(sigma_fit))
+  error_fit[,1]=0
+  error_fit=error_fit[,2:sample_size]
+  basis=as.matrix(basis[,1:M])
+
+  sigma_2_proj_coefs=matrix(0,M,sample_size)
+  sigma_2_proj_coefs[,1]=d_hat
+  for(i in 2:(sample_size)){
+    first_part=d_hat
+    second_part=A_hat%*%y_vec[,i-1]+B_hat%*%sigma_2_proj_coefs[,i-1]
+    sigma_2_proj_coefs[,i]=first_part+second_part
+  }
+
+  #### goodness-of-fit test
 
   if(missing(K)) {
     K=20
@@ -376,8 +470,8 @@ gof.fgarch <- function(error_fit,sigma_fit,ortho_basis_matrix,y_2_proj_coefs,sig
     return(sumdys/ncol(y_2_proj_coefs1))
   }
 
-  covariance_op_new<-function(error_fit,sigma_fit,ortho_basis_matrix,y_2_proj_coefs1,sigma_2_proj_coefs,para,h,g){
-    ortho_basis_matrix=ortho_basis_matrix/(sum(ortho_basis_matrix)/nrow(error_fit))
+  covariance_op_new<-function(error_fit,sigma_fit,basis,y_2_proj_coefs1,sigma_2_proj_coefs,para,h,g){
+    basis=basis/(sum(basis)/nrow(error_fit))
     TT = dim(error_fit)[2]
     p = dim(error_fit)[1]
 
@@ -431,9 +525,9 @@ gof.fgarch <- function(error_fit,sigma_fit,ortho_basis_matrix,y_2_proj_coefs,sig
         }
       }
       for (j in 1:(M+M^2)){
-        if (j<=M){p2_g[j,]=ortho_basis_matrix[,j]*parti_g[j,1]}#(j-(ceiling(j/M)-1)*M)
+        if (j<=M){p2_g[j,]=basis[,j]*parti_g[j,1]}#(j-(ceiling(j/M)-1)*M)
         else{
-          p2_g[j,]=(rowSums(ortho_basis_matrix[,(permu[j-M,1])]%o%ortho_basis_matrix[,(permu[j-M,2])])/p)*parti_g[j,1]}
+          p2_g[j,]=(rowSums(basis[,(permu[j-M,1])]%o%basis[,(permu[j-M,2])])/p)*parti_g[j,1]}
       }
       G_g = G_g + ((t(replicate((M+M^2),(1/sigma_fit[,k+g])))*p2_g)%o%(error_fit[,k]))
     }
@@ -460,9 +554,9 @@ gof.fgarch <- function(error_fit,sigma_fit,ortho_basis_matrix,y_2_proj_coefs,sig
 
       }
       for (j in 1:(M+M^2)){
-        if (j<=M){p2_h[j,]=ortho_basis_matrix[,j]*parti_h[j,1]}#(j-(ceiling(j/M)-1)*M)
+        if (j<=M){p2_h[j,]=basis[,j]*parti_h[j,1]}#(j-(ceiling(j/M)-1)*M)
         else{
-          p2_h[j,]=(rowSums(ortho_basis_matrix[,(permu[j-M,1])]%o%ortho_basis_matrix[,(permu[j-M,2])])/p)*parti_h[j,1]}
+          p2_h[j,]=(rowSums(basis[,(permu[j-M,1])]%o%basis[,(permu[j-M,2])])/p)*parti_h[j,1]}
       }
       G_h=G_h + ((t(replicate((M+M^2),(1/sigma_fit[,k+h])))*p2_h)%o%(error_fit[,k]))
     }
@@ -567,7 +661,7 @@ gof.fgarch <- function(error_fit,sigma_fit,ortho_basis_matrix,y_2_proj_coefs,sig
         cov_mat_A=array(0, c(len, len, len, len))
         cov_mat=array(0, c(len, len, len, len))
 
-        covop_trace=covariance_op_new(error_fit_p[rrefind,],sigma_fit[rrefind,],as.matrix(as.matrix(ortho_basis_matrix)[rrefind,],length(rrefind),1),y_2_proj_coefs,sigma_2_proj_coefs,para,hh,hh)
+        covop_trace=covariance_op_new(error_fit_p[rrefind,],sigma_fit[rrefind,],as.matrix(as.matrix(basis)[rrefind,],length(rrefind),1),y_vec,sigma_2_proj_coefs,para,hh,hh)
         mean_A[2:len] = covop_trace[[4]][-len]
         mean_mat[2:len,2:len] = covop_trace[[3]][-len,-len]
         mu_cov=mu_cov+sum((1/2) * (covop_trace[[4]]+mean_A)*xd)^2
@@ -584,14 +678,14 @@ gof.fgarch <- function(error_fit,sigma_fit,ortho_basis_matrix,y_2_proj_coefs,sig
           if((abs(h2-h1)) < 3){
             cov_mat=array(0, c(len, len, len, len))
 
-            covop_est=covariance_op_new(error_fit_p[rrefind,],sigma_fit[rrefind,],as.matrix(as.matrix(ortho_basis_matrix)[rrefind,],length(rrefind),1),y_2_proj_coefs,sigma_2_proj_coefs,para,h1,h2)
+            covop_est=covariance_op_new(error_fit_p[rrefind,],sigma_fit[rrefind,],as.matrix(as.matrix(basis)[rrefind,],length(rrefind),1),y_vec,sigma_2_proj_coefs,para,h1,h2)
             cov_mat[2:len,2:len,2:len,2:len] = covop_est[[2]][-len,-len,-len,-len]
             sigma2_cov=sigma2_cov+2*2*sum((1/2)*(covop_est[[2]]^2+cov_mat^2)*gmat)
           }
 
           if((abs(h2-h1)) >= 3){
             cov_mat=array(0, c(len2, len2, len2, len2))
-            covop_est=covariance_op_new(error_fit_p[rrefind2,],sigma_fit[rrefind2,],as.matrix(as.matrix(ortho_basis_matrix)[rrefind2,],length(rrefind2),1),y_2_proj_coefs,sigma_2_proj_coefs,para,h1,h2)
+            covop_est=covariance_op_new(error_fit_p[rrefind2,],sigma_fit[rrefind2,],as.matrix(as.matrix(basis)[rrefind2,],length(rrefind2),1),y_vec,sigma_2_proj_coefs,para,h1,h2)
             cov_mat[2:len2,2:len2,2:len2,2:len2] = covop_est[[2]][-len2,-len2,-len2,-len2]
             sigma2_cov=sigma2_cov+2*2*sum((1/2)*(covop_est[[2]]^2+cov_mat^2)*gmat2)
           }
@@ -604,7 +698,7 @@ gof.fgarch <- function(error_fit,sigma_fit,ortho_basis_matrix,y_2_proj_coefs,sig
       cov_mat_A=array(0, c(len, len, len, len))
       cov_mat=array(0, c(len, len, len, len))
 
-      covop_est=covariance_op_new(error_fit_p[rrefind,],sigma_fit[rrefind,],as.matrix(as.matrix(ortho_basis_matrix)[rrefind,],length(rrefind),1),y_2_proj_coefs,sigma_2_proj_coefs,para,1,1)
+      covop_est=covariance_op_new(error_fit_p[rrefind,],sigma_fit[rrefind,],as.matrix(as.matrix(basis)[rrefind,],length(rrefind),1),y_vec,sigma_2_proj_coefs,para,1,1)
 
       mean_A[2:len] = covop_est[[4]][-len]
       mean_mat[2:len,2:len] = covop_est[[3]][-len,-len]

@@ -44,5 +44,5 @@ bern = ppb$bern
 \seealso{
 \code{\link{basis.tfpca}} \code{\link{basis.fsnn}} \code{\link{basis.pf}}
 
-\code{\link{basis.tfpca}} \code{\link{basis.fsnn}} \code{\link{basis.pf}}
+\code{\link{basis.tfpca}} \code{\link{basis.fsnn}} \code{\link{basis.tpf}}
 }

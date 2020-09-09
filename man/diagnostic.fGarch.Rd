@@ -11,7 +11,7 @@ diagnostic.fGarch(params, basis, yd, p = 0, q = 1, xd = NULL)
 
 \item{basis}{The M-dimensional basis functions for the projection.}
 
-\item{yd}{A grid_point x N matrix drawn from N intra-day price curves.}
+\item{yd}{A grid_point x N matrix drawn from N functional curves.}
 
 \item{p}{The order of the depedence on past squared observations. If it is missing, p=0.}
 
@@ -22,15 +22,13 @@ diagnostic.fGarch(params, basis, yd, p = 0, q = 1, xd = NULL)
 \value{
 List of parameters:
 
-yproj: a (number of observations) x (number of basis functions) matrix of projections of squared observations.
-
-sigproj: a (number of observations) x (number of basis functions) matrix of projections of conditional volatility.
-
 eps: a grid_point x N matrix containing fitted residuals.
 
 sigma2: a grid_point x (N+1) matrix that the first N columns are the fitted conditional variance, the N+1 column is the predicted conditional variance.
 
 yfit: a grid_point x N matrix drawn from N fitted intra-day price curves.
+
+kernel_op: estimated kernel coefficient operators.
 }
 \description{
 diagnostic.fGarch function provides the estimation parameters that can be used as the inputs for a diagnostic purpose.
@@ -44,11 +42,11 @@ fdy = fda::Data2fd(argvals=seq(0,1,len = 50),y=yd,fda::create.bspline.basis(nbas
 ba = basis.tfpca(yd,M=2)
 basis_est = ba$basis
 # fit the curve data with an FGARCH-X model.
-y_inp = basis.score(fdy,as.matrix(basis_est[,1]))
+y_inp = basis.score(fdy,as.matrix(basis_est))
 arch_est = est.fArch(y_inp)
 
 # get parameters for diagnostic checking.
-feed_gof  = diagnostic.fGarch(arch_est,basis_est[,1],yd)
+diag_arch  = diagnostic.fGarch(arch_est,basis_est,yd)
 
 }
 \references{

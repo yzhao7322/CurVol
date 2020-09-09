@@ -75,7 +75,7 @@ intra.return <- function(yd){
 #' @export
 #' @importFrom stats time
 #'
-#' @seealso \code{\link{basis.tfpca}} \code{\link{basis.fsnn}} \code{\link{basis.pf}}
+#' @seealso \code{\link{basis.tfpca}} \code{\link{basis.fsnn}} \code{\link{basis.tpf}}
 #' @examples
 #' #generate discrete evaluations of exponential and Bernstein basis functions with order one.
 #' ppb = basis.pp(50,1)
@@ -108,7 +108,7 @@ basis.pp <- function(grid_point,M){
 #'
 #' @import fda
 #'
-#' @seealso \code{\link{basis.pp}} \code{\link{basis.fsnn}} \code{\link{basis.pf}}
+#' @seealso \code{\link{basis.pp}} \code{\link{basis.fsnn}} \code{\link{basis.tpf}}
 #' @examples
 #' # generate discrete evaluations of the FARCH process.
 #' fd = dgp.farch(50,100)
@@ -160,7 +160,7 @@ basis.tfpca <- function(yd,M){
 #' @importFrom nsprcomp nsprcomp
 #' @import fda
 #'
-#' @seealso \code{\link{basis.pp}} \code{\link{basis.tfpca}} \code{\link{basis.pf}}
+#' @seealso \code{\link{basis.pp}} \code{\link{basis.tfpca}} \code{\link{basis.tpf}}
 #' @examples
 #' # generate discrete evaluations of the FARCH process.
 #' fd = dgp.farch(50,100)
@@ -298,9 +298,9 @@ basis.fsnn <- function(yd, M){
 
 
 
-#' Predictive Factors
+#' Truncated Predictive Factors
 #'
-#' @description basis.pf function extracts non-negative predictive factors from the squared process of conditionally heteroscedastic curves, presumably, so that they may be modelled with a Functional GARCH model subsequently.
+#' @description basis.tpf function extracts non-negative predictive factors from the squared process of conditionally heteroscedastic curves, presumably, so that they may be modelled with a Functional GARCH model subsequently.
 #'
 #' @param yd A (grid_point) x (number of observations) matrix drawn from N discrete evaluation curves.
 #' @param M The number/order of basis functions, by default \eqn{M = 10}.
@@ -325,7 +325,7 @@ basis.fsnn <- function(yd, M){
 #'
 #' @references
 #' Rice, G., Wirjanto, T., Zhao, Y. (2020). Functional GARCH-X model with an application to forecasting crude oil return curves. Working Paper.
-basis.pf<-function(yd,M,a,h){
+basis.tpf<-function(yd,M,a,h){
 
   est_cov<-function(yd,h){
     #h: forecast horizon

@@ -7,11 +7,11 @@
 est.fGarch(y_vec, p = 1, q = 1)
 }
 \arguments{
-\item{y_vec}{(number of observations) x (number of basis functions) matrix of projections of squared observations}
+\item{y_vec}{(number of observations) x (number of basis functions) matrix of projections of squared observations.}
 
-\item{p}{order of the depedence on past squared observations}
+\item{p}{order of the depedence on past squared observations.}
 
-\item{q}{order of the depedence on past volatilities}
+\item{q}{order of the depedence on past volatilities.}
 }
 \value{
 List of model paramters:

@@ -59,5 +59,5 @@ Cerovecki, C., Francq, C., Hormann, S., Zakoian, J. M. (2019). Functional GARCH 
 \seealso{
 \code{\link{basis.pp}} \code{\link{basis.fsnn}} \code{\link{basis.pf}}
 
-\code{\link{basis.pp}} \code{\link{basis.fsnn}} \code{\link{basis.pf}}
+\code{\link{basis.pp}} \code{\link{basis.fsnn}} \code{\link{basis.tpf}}
 }

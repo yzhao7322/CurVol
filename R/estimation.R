@@ -214,9 +214,9 @@ est.fArch=function(y_vec,q=1){
 #'
 #' This function allows you to fit a funcGARCH(p,q) using QMLE, given the matrix of squared projections onto a finite number of basis functions.
 #'
-#' @param y_vec (number of observations) x (number of basis functions) matrix of projections of squared observations
-#' @param p order of the depedence on past squared observations
-#' @param q order of the depedence on past volatilities
+#' @param y_vec (number of observations) x (number of basis functions) matrix of projections of squared observations.
+#' @param p order of the depedence on past squared observations.
+#' @param q order of the depedence on past volatilities.
 #'
 #' @return List of model paramters:
 #' @return d: d Parameter vector, for intercept function \eqn{\delta}. See Aue et. al 2017/Cerovecki2019
@@ -605,17 +605,16 @@ est.fGarchx=function(y_vec,x_vec){
 #'
 #' @param params List of model paramters: d, As, Bs (and Gs).
 #' @param basis The M-dimensional basis functions for the projection.
-#' @param yd A grid_point x N matrix drawn from N intra-day price curves.
+#' @param yd A grid_point x N matrix drawn from N functional curves.
 #' @param p The order of the depedence on past squared observations. If it is missing, p=0.
 #' @param q The order of the depedence on past volatilities. If it is missing, q=1.
 #' @param xd A grid_point x N matrix drawn from N covariate X curves. The default value is NULL.
 #'
 #' @return List of parameters:
-#' @return yproj: a (number of observations) x (number of basis functions) matrix of projections of squared observations.
-#' @return sigproj: a (number of observations) x (number of basis functions) matrix of projections of conditional volatility.
 #' @return eps: a grid_point x N matrix containing fitted residuals.
 #' @return sigma2: a grid_point x (N+1) matrix that the first N columns are the fitted conditional variance, the N+1 column is the predicted conditional variance.
 #' @return yfit: a grid_point x N matrix drawn from N fitted intra-day price curves.
+#' @return kernel_op: estimated kernel coefficient operators.
 #'
 #' @export
 #'
@@ -630,11 +629,11 @@ est.fGarchx=function(y_vec,x_vec){
 #' ba = basis.tfpca(yd,M=2)
 #' basis_est = ba$basis
 #' # fit the curve data with an FGARCH-X model.
-#' y_inp = basis.score(fdy,as.matrix(basis_est[,1]))
+#' y_inp = basis.score(fdy,as.matrix(basis_est))
 #' arch_est = est.fArch(y_inp)
 #'
 #' # get parameters for diagnostic checking.
-#' feed_gof  = diagnostic.fGarch(arch_est,basis_est[,1],yd)
+#' diag_arch  = diagnostic.fGarch(arch_est,basis_est,yd)
 #'
 #' @references
 #' Rice, G., Wirjanto, T., Zhao, Y. (2020). Tests for conditional heteroscedasticity of functional data. Journal of Time Series Analysis.
@@ -744,40 +743,10 @@ diagnostic.fGarch=function(params,basis,yd,p=0,q=1,xd=NULL){
   }
   fd_fit=sqrt(abs(sigma2_fit[,1:N]))*error_sim(grid_point,N)
 
-  # get projection coefficients
-  y2_proj_coefs=matrix(0,nrow=M,ncol=N)
-  yd2=yd*yd
-  x_proj_coefs=matrix(0,nrow=M,ncol=N)
-  for(i in 1:N){
-    for(j in 1:M){
-      y2_proj_coefs[j,i]=int_approx(yd2[,i]*basis[,j])
-      if(missing(xd)==FALSE){
-        x_proj_coefs[j,i]=int_approx(xd[,i]*basis[,j])
-      }
-    }
-  }
+  # kernel coefficients
+  kernel_coef = list(alpha = alpha_Op_hat)
+  if(p!=0){kernel_coef = list(alpha = alpha_Op_hat, beta = beta_Op_hat)}
+  if(missing(xd)==FALSE){kernel_coef = list(alpha = alpha_Op_hat, beta = beta_Op_hat, gamma = gamma_Op_hat)}
 
-  sigma2_proj_coefs=matrix(0,M,N)
-  for(i in 1:max(p+q)){
-    sigma2_proj_coefs[,i]=d
-  }
-
-  for(i in (max(p,q)+1):N){
-    arch_part = garch_part = 0
-    cons_part = d
-    for (h in 1:q){
-      arch_part = arch_part + As[[h]]%*%y2_proj_coefs[,i-h]}
-    if(p!=0){
-      for (h in 1:p){
-        garch_part = garch_part + Bs[[h]]%*%sigma2_proj_coefs[,i-h]}
-    }
-    sigma2_proj_coefs[,i]=cons_part+arch_part+garch_part
-
-    if(missing(xd)==FALSE){
-      x_part = Gs[[1]]%*%x_proj_coefs[,i-1]
-      sigma2_proj_coefs[,i]=cons_part+arch_part+garch_part+x_part
-    }
-  }
-
-  return(list(yproj = y2_proj_coefs, sigproj = sigma2_proj_coefs, eps = error_fit, sigma2 = sigma2_fit, yfit = fd_fit))
+  return(list(eps = error_fit, sigma2 = sigma2_fit, yfit = fd_fit, kernel_op = kernel_coef))
 }
