@@ -9,3 +9,5 @@ Description: More about what it does (maybe more than one line)
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
+URL: https://github.com/yzhao7322/CurVol
+BugReports: https://github.com/yzhao7322/CurVol/issues
