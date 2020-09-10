@@ -27,11 +27,11 @@ basis.tpf function extracts non-negative predictive factors from the squared pro
 }
 \examples{
 # generate discrete evaluations of the FARCH process.
-fd = dgp.farch(50,100)
-fd_arch = fd$arch_mat
+yd = dgp.farch(50,100)
+yd_arch = yd$arch_mat
 
 # decompose the first two non-negative predictive factors.
-basis.pf(fd_arch,M=2,a=0.75,h=1)
+basis.tpf(yd_arch,M=2,a=0.75,h=1)
 
 }
 \references{

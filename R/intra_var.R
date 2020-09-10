@@ -1,378 +1,471 @@
-#' Intra-day Return Curves
+#' Predict Daily/intra-day Value-at-Risk
 #'
-#' @description intra.return function calculates three types of intra-day return curves: intra-day log return (IDR), cumulative intra-day log return (CIDR), and overnight cumulative intra-day log return (OCIDR).
+#' @description var.forecast function forecasts the daily VaR and intra-day VaR curves according to intra-day return curves.
 #'
-#' @param yd A (grid_point) x (number of observations) matrix drawn from N intra-day price curves.
+#' @param yd A (grid_point) x (number of observations) matrix drawn from N functional curves.
+#' @param sigma_pred The predicted conditional standard deviation curve obtained by using the functional ARCH/GARCH model.
+#' @param error_fit The residual obtained from the functional ARCH/GARCH model.
+#' @param quantile_v The percentile of the VaR forecasts.
+#' @param Method A string to indicate which method will be implemented to estimate the quantile of the error: "normal" - assuming errors following a normal distribution; "bootstrap" - bootstrapping the empirical distribution from the historical data; "evt" - fitting the error with a generalized Pareto distribution.
 #'
-#' @return List of return data:
-#' @return idr: the IDR.
-#' @return cidr: the CIDR.
-#' @return ocidr: the OCIDR.
+#' @return List of objects:
+#' @return day_VaR: the daily VaR.
+#' @return day_ES: the daily expected shortfall.
+#' @return intraday_VaR: the intra-day VaR curves.
+#'
+#' @export
+#'
+#' @importFrom POT fitgpd
+#' @importFrom POT rgpd
+#'
+#' @details
+#' This function uses a two-step approach to forecast intra-day Value-at-Risk, in formula that\cr
+#' \eqn{VaR_{i+1}^\tau(t)=\hat{\sigma}_{i+1}(t)\hat{\varepsilon}^\tau(t)}, for \eqn{1\leq i \leq N}, \eqn{t\in[0,1]}, and the percentile \eqn{\tau \in [0,1]},\cr
+#' where the forecats of conditional standard deviation \eqn{\hat{\sigma}_{i+1}(t)} can be obtained by using \code{\link{est.fArch}}, \code{\link{est.fGarch}}, or \code{\link{est.fGarchx}}. Note that when \eqn{t=1}, \eqn{VaR_{i+1}^\tau(1)} is the forecast of daily VaR.
+#'
+#' @seealso \code{\link{basis.tfpca}} \code{\link{basis.score}} \code{\link{est.fGarch}} \code{\link{diagnostic.fGarch}}
+#' @examples
+#' # generate discrete evaluations of the FGARCH(1,1) process.
+#' grid_point = 50; N = 200
+#' yd = dgp.fgarch(grid_point, N)
+#' yd = yd$garch_mat
+#' # extract data-driven basis functions through the truncated FPCA method.
+#' ba = basis.tfpca(yd,M=2)
+#' basis_est = ba$basis
+#' # fit the curve data and the conditional volatility by using an FGARCH(1,1) model with M=1.
+#' fd = fda::Data2fd(argvals=seq(0,1,len = 50),y=yd,fda::create.bspline.basis(nbasis = 32))
+#' y_inp = basis.score(fd,as.matrix(basis_est[,1]))
+#' garch11_est = est.fGarch(y_inp)
+#' diag_garch = diagnostic.fGarch(garch11_est,basis_est[,1],yd)
+#' sigma_fit = diag_garch$sigma2[,1:N]
+#' error_fit = diag_garch$eps
+#'
+#' # get in-sample intra-day VaR curve by assuming a point-wisely Gaussian distributed error term.
+#' exr=var.forecast(yd,sigma_fit,error_fit,quantile_v=0.01,Method="normal")
+#' exr$intraday_VaR
+#'
+#' @references
+#' Rice, G., Wirjanto, T., Zhao, Y. (2020). Forecasting Value at Risk via intra-Day return curves. International Journal of Forecasting.
+var.forecast <- function(yd,sigma_pred,error_fit,quantile_v,Method){
+  # a function to resample curve data with replacement.
+  resmp <- function(data,boot_N,boot_in_N){
+    bootres=matrix(NA,1,boot_N)
+    for (j in 1:boot_N){
+      bootres[,j]=data[sample(c(1:boot_in_N),1,replace=TRUE)]
+    }
+    return(bootres)}
+
+  point_grid=nrow(yd)
+  in_N=ncol(error_fit)
+  switch(Method,
+         normal = {
+           error_var=qnorm(p=quantile_v,mean=0,sd=1)
+           daily_var=(sigma_pred[point_grid])*error_var
+           ea=yd[point_grid,]
+           ealog=(ea<daily_var)
+           daily_es=mean(ea[ealog])
+           var_curves=sigma_pred*error_var
+         },
+         bootstrap = {
+           bootN=1000
+           error_var=matrix(NA,point_grid,1)
+           for (j in 1:point_grid){
+             bootres=resmp(error_fit[j,],bootN,in_N)
+             error_var[j,1]=quantile(bootres,quantile_v)}
+           daily_var=sigma_pred[point_grid]*error_var[point_grid,1]
+           ea=yd[point_grid,]
+           ealog=(ea<daily_var)
+           daily_es=mean(ea[ealog])
+           var_curves=sigma_pred*error_var
+         },
+         evt = {
+           M=4 # this can be altered, here we stick on the implementation of Rice, Wirjanto, Zhao (2020).
+           times=rep(0,point_grid)
+           for(i in 1:point_grid){times[i]=i/point_grid}
+           basis_obj=create.bspline.basis(rangeval=c(times[1],1),nbasis=32,norder=4)
+           y_sq_fdsmooth=smooth.basis(argvals=times,y=error_fit,fdParobj=basis_obj)
+           y_sq_fd=y_sq_fdsmooth$fd
+           pca_obj=pca.fd(y_sq_fd,nharm=10,harmfdPar=fdPar(y_sq_fd), centerfns=FALSE)  #also try centerfns = TRUE
+           eigen_functs=pca_obj$harmonics
+           error_basis=matrix(0,nrow=point_grid,ncol=M)
+           for(j in 1:M){error_basis[,j]=eval.fd(times,eigen_functs[j])}
+           int_approx=function(x){temp_n=NROW(x)
+           return((1/temp_n)*sum(x))}
+           error_proj=matrix(NA,in_N,M)
+           for(i in 1:in_N){
+             for(j in 1:M){error_proj[i,j]=int_approx(error_fit[,i]*error_basis[,j])}}
+
+           #### predict error_proj by using the generalised extreme value theory, the threshold parameter mythh is subjectively selected by graphical methods.
+           mythh=rep(1,M)
+           for (i in 1:M){
+             mythh[i]=quantile(ecdf(error_proj[,i]),0.03)}
+           gpd_sim=matrix(NA,1000,M)
+
+           for (j in 1:M){
+             gev=fitgpd(data=as.vector(error_proj[,j]),threshold=mythh[j],est="mle")
+             scale_sigma=gev[[1]][1];shape_xi=gev[[1]][2]
+             gpd_sim[,j]=rgpd(1000,loc=mythh[j],scale=scale_sigma,shape=shape_xi)
+           }
+           #### reverse-KL explansion: from the error_proj (from generalised pareto distribution) to infinite dimensional [0,1] space error_pred
+           errorq_pred=matrix(0,point_grid,1000)
+           ytq_es=matrix(NA,point_grid,1)
+           for (i in 1:1000){
+             for(j in 1:M){
+               errorq_pred[,i]=errorq_pred[,i]+gpd_sim[i,j]*error_basis[,j] }}
+
+           errorq_var=matrix(NA,point_grid,1)
+
+           for(i in 1:point_grid){
+             errorq_var[i,]=quantile(errorq_pred[i,],quantile_v)
+           }
+
+           daily_var=(sigma_pred[point_grid])*errorq_var[point_grid,]
+           ea=yd[point_grid,]
+           ealog=(ea<daily_var)
+           daily_es=mean(ea[ealog])
+           var_curves=sigma_pred*errorq_var
+         },
+         stop("Enter something to switch me!")
+  )
+
+  return(list(day_VaR = daily_var, day_ES = daily_es, intraday_VaR = var_curves))
+}
+
+
+
+#' Violation Process
+#'
+#' @description var.vio function returns a violation curve for the intra-day VaR curves.
+#'
+#' @param yd A (grid_point) x (number of observations) matrix drawn from N functional curves.
+#' @param var_curve A (grid_point) x (number of observations) matrix storing the forecasts of intra-day VaR curves.
+#'
+#' @return A violation process of the intra-day return curves based on the forecasts of intra-day VaR curves.
+#' @export
+#'
+#' @details
+#' Given the intra-day return curves \eqn{x_i(t)}, and the forecasts of intra-day VaR curves \eqn{\widehat{VaR}_i^\tau(t)} obtained from \code{\link{var.forecast}}, the violation process \eqn{Z_i^\tau(t)} can be defined as, \cr
+#' \eqn{Z_i^\tau(t)=I(x_i(t)<\widehat{VaR}_i^\tau(t))}, for \eqn{1\leq i \leq N}, \eqn{t\in[0,1]}, and \eqn{\tau \in [0,1]},\cr
+#' where \eqn{I(\cdot)} is an indicator function.
+#'
+#' @seealso \code{\link{var.forecast}}
+#' @examples
+#' # generate discrete evaluations of the FGARCH(1,1) process.
+#' grid_point = 50; N = 200
+#' yd = dgp.fgarch(grid_point, N)
+#' yd = yd$garch_mat
+#' # extract data-driven basis functions through the truncated FPCA method.
+#' ba = basis.tfpca(yd,M=2)
+#' basis_est = ba$basis
+#' # fit the curve data and the conditional volatility by using an FGARCH(1,1) model with M=1.
+#' fd = fda::Data2fd(argvals=seq(0,1,len = grid_point),y=yd,fda::create.bspline.basis(nbasis = 32))
+#' y_inp = basis.score(fd,as.matrix(basis_est[,1]))
+#' garch11_est = est.fGarch(y_inp)
+#' diag_garch = diagnostic.fGarch(garch11_est,basis_est[,1],yd)
+#' sigma_fit = diag_garch$sigma2[,1:N]
+#' error_fit = diag_garch$eps
+#' # get in-sample intra-day VaR curve by assuming a point-wisely Gaussian distributed error term.
+#' var_obj = var.forecast(yd,sigma_fit,error_fit,quantile_v=0.01,Method="normal")
+#' intra_var = var_obj$intraday_VaR
+#'
+#' # compute the violation curve.
+#' var.vio(yd,intra_var)
+#'
+#' @references
+#' Rice, G., Wirjanto, T., Zhao, Y. (2020). Forecasting Value at Risk via intra-Day return curves. International Journal of Forecasting.
+var.vio <- function(yd,var_curve){
+  point_grid=nrow(yd)
+  n=ncol(yd)
+  y_vio=matrix(0,point_grid,n)
+  for (i in 1:n){
+    ind=as.matrix(yd)[,i]<as.matrix(var_curve)[,i]
+    y_vio[ind,i]=1
+  }
+  return(y_vio)
+}
+
+
+
+#' Backtest Intra-day VaR (Unbiasedness Hypothesis)
+#'
+#' @description backtest.unbias function backtests the unbiasedness hypothesis for the intra-day VaR curve forecasts.
+#'
+#' @param vio A (grid_point) x (number of observations) matrix drawn from the violation process curves.
+#' @param tau The nominal/true quantile of the VaR curves.
+#'
+#' @return The p-value of the test statistics.
 #'
 #' @export
 #'
 #' @details
-#' Suppose that \eqn{P_i(t)} denotes the intra-day price curves, for \eqn{1\leq i \leq N} and \eqn{t\in[0,1]}, we then have,\cr
-#' Intra-day log returns: \eqn{x_i(t)=\log P_i(t) - \log P_i(t-\Delta)}, where \eqn{\Delta} is the frequency at intra-day grid points;
-#' Cumulative intra-day log returns: \eqn{X_i(t)=\log P_i(t) - \log P_i(0)};
-#' Overnight cumulative intra-day log returns: \eqn{x_i(t)=\log P_i(t) - \log P_{i-1}(1)}.
+#' Given the violation process \eqn{Z_i^\tau(t)} at the quantile \eqn{\tau} obtained by using \code{\link{var.vio}}, the function computes an approximate p-value of a test of the null hypothesis \eqn{H_0}: \eqn{E(Z_i^\tau(t)-\tau)=0}, for all \eqn{t \in[0,1]}, \eqn{1\leq i\leq N}. The test statistics,\cr
+#' \eqn{T_N=N|| \bar{Z}(t)-\tau||^2} is employed, where \eqn{||\cdot ||} is the \eqn{L^2} norm, and \eqn{\bar{Z}(t)=1/N\sum_{i=1}^N Z_i(t)}.
+#'
+#' @seealso \code{\link{var.forecast}} \code{\link{var.vio}} \code{\link{backtest.indep}}
 #'
 #' @examples
-#' # generate intra-day price curve data for the FARCH process.
-#' yd = dgp.farch(50,100)
-#' yd_arch = yd$arch_mat
+#' # generate discrete evaluations of the FGARCH(1,1) process.
+#' grid_point = 50; N = 200
+#' yd = dgp.fgarch(grid_point, N)
+#' yd = yd$garch_mat
+#' # extract data-driven basis functions through the truncated FPCA method.
+#' ba = basis.tfpca(yd,M=2)
+#' basis_est = ba$basis
+#' # fit the curve data and the conditional volatility by using a FGARCH(1,1) model with M=1.
+#' fd = fda::Data2fd(argvals=seq(0,1,len = grid_point),y=yd,fda::create.bspline.basis(nbasis = 32))
+#' y_inp = basis.score(fd,as.matrix(basis_est[,1]))
+#' garch11_est = est.fGarch(y_inp)
+#' diag_garch = diagnostic.fGarch(garch11_est,basis_est[,1],yd)
+#' sigma_fit = diag_garch$sigma2[,1:N]
+#' error_fit = diag_garch$eps
+#' # get in-sample intra-day VaR curve by assuming a point-wisely Gaussian distributed error term.
+#' var_obj = var.forecast(yd,sigma_fit,error_fit,quantile_v=0.01,Method="normal")
+#' intra_var = var_obj$intraday_VaR
+#' # compute the violation curves.
+#' intra_vio = var.vio(yd,intra_var)
 #'
-#' # calculate discrete data drawn from N intra-day return curves.
-#' fcurve = intra.return(yd_arch)
-#' idr = fcurve$idr
-#' cidr = fcurve$cidr
-#' ocidr = fcurve$ocidr
+#' # backtesting the Unbiasedness Hypothesis for the violation curve.
+#' backtest.unbias(vio=intra_vio,tau=0.01)
 #'
 #' @references
-#' Gabrys, R., Horvath, L., Kokoszka, P. (2010). Tests for error correlation in the functional linear model. Journal of the American Statistical Association, 105(491), 1113-1125.\cr
-#' Rice, G., Wirjanto, T., Zhao, Y. (2020). Forecasting Value at Risk via Intra-Day Return Curves. To appear in International Journal of Forecasting.
-intra.return <- function(yd){
-  grid_point=nrow(yd)
-  N=ncol(yd)
-  idr_re=matrix(0,grid_point-1,N)
-  cidr_re=matrix(0,grid_point,N)
-  ocidr_re=matrix(0,grid_point,N-1)
+#' Christoffersen, P. (2010). Backtesting. Encyclopedia of Quantitative Finance, Wiley. \cr
+#' Rice, G., Wirjanto, T., Zhao, Y. (2020). Forecasting Value at Risk via intra-Day return curves. International Journal of Forecasting.
+#'
+backtest.unbias <- function(vio,tau){
 
-  for(j in c(2:grid_point)){
-    for(i in c(1:N)){
-      idr_re[j-1,i]=log(yd[j,i])-log(yd[j-1,i])
-    }
+  # the test T statistics
+  H0_Tn<-function(z,tau){
+    point_grid=nrow(z)
+    n=ncol(z)
+    int_approx=function(x){
+      temp_n=NROW(x)
+      return((1/temp_n)*sum(x))}
+    Tn=n*int_approx(colMeans(z)-tau)^2
+    return(Tn)
   }
 
-  for(j in c(1:grid_point)){
-    for(i in c(1:N)){
-      cidr_re[j,i]=log(yd[j,i])-log(yd[1,i])
+  # get the critical values
+  Tn_cv<-function(z,cv_N){
+    N=ncol(z)
+    point_grid=nrow(z)
+
+    # autocovariance operator from -N to N
+    cov_est<-function(x,h){
+      N=ncol(x)
+      c_est=x[,1:(N-h)]%*%t(x[,(h+1):N])/(N-h)
+      return(c_est)
     }
+
+    Gam=0
+    Gam=Gam+cov_est(z,0)#long_run_cov2(z, C0 = 3, H = 3)#c
+
+    eig=eigen(Gam)
+    eigvals=eig$values
+    eigvals=as.vector(eigvals)
+    vect=eigvals/point_grid
+
+    int_approx=function(x){
+      temp_n=NROW(x)
+      return((1/temp_n)*sum(x))}
+
+    lim_sum=matrix(0,cv_N,1)
+
+    lim_sum=0
+    for (j in 1:length(vect)){
+      lim_sum=lim_sum+vect[j]*rnorm(cv_N,mean=0,sd=1)}
+
+    cv=quantile(lim_sum,probs=c(0.90,0.95,0.99))
+    return(list(cv,lim_sum))
   }
 
-  for(j in c(1:grid_point)){
-    for(i in c(2:N)){
-      ocidr_re[j,i-1]=log(yd[j,i])-log(yd[grid_point,i-1])
-    }
-  }
+  cv_N=5000 # sample size for approximating critical values
+  Tn_stat=H0_Tn(vio,tau)
+  limit=Tn_cv(vio,cv_N)
+  emplim=limit[[2]]
 
-  return(list(idr = idr_re, cidr = cidr_re, ocidr = ocidr_re))
+  return(1-ecdf(emplim)(Tn_stat))
 }
 
 
 
 
-#' Positive Polynominals
-#'
-#' @description basis.pp function returns positive vectors drawn from exponential and Bernstein functions.
-#' @param grid_point The number of grid point in each curve observation.
-#' @param M The number/order of basis functions.
-#'
-#' @return List of objects:
-#' @return exp: A (grid_point) x (M) matrix drawn from M Exponential basis functions.
-#' @return bern: A (grid_point) x (M) matrix drawn from M Bernstein basis functions.
-#'
-#' @export
-#' @importFrom stats time
-#'
-#' @seealso \code{\link{basis.tfpca}} \code{\link{basis.fsnn}} \code{\link{basis.pf}}
-#' @examples
-#' #generate discrete evaluations of exponential and Bernstein basis functions with order one.
-#' ppb = basis.pp(50,1)
-#' exp = ppb$exp
-#' bern = ppb$bern
-basis.pp <- function(grid_point,M){
-  time=1:grid_point/grid_point
-  exp_matrix=matrix(NA,grid_point,M)
-  bernstein_matrix=matrix(NA,grid_point,M)
-  for (k in 1:M){
-    exp_matrix[,k]=exp(1)^(k*time)
-    bernstein_matrix[,k]=(factorial(M-1)/(factorial(k-1)*factorial(M-k)))*(time^(k-1))*((1-time)^(M-k))
-  }
-  return(list(exp = exp_matrix, bern = bernstein_matrix))
-}
 
 
-#' Truncated Functional Pricipal Component Analysis
+#' Backtest Intra-day VaR (Independence Hypothesis)
 #'
-#' @description basis.tfpca function extracts truncated non-negative functional principal components from the squared process of conditionally heteroscedastic curves, presumably, so that they may be modelled with a Functional GARCH model subsequently.
+#' @description backtest.indep function backtests the independence hypothesis for the intra-day VaR curves forecasts.
 #'
-#' @param yd A (grid_point) x (number of observations) matrix drawn from N discrete evaluation curves.
-#' @param M The number/order of basis functions, by default \eqn{M = 10}.
+#' @param vio A (grid_point) x (number of observations) matrix drawn from the violation process curves.
+#' @param K The maximal lagged autocorrelation considered for the independence test.
 #'
-#' @return List of objects:
-#' @return basis: a (grid_point) x (M) matrix containing discrete evaluations of M truncated functional principal components.
-#' @return tve: the total variations explained by each truncated functional principal component.
-#'
+#' @return The p-value of the test statistics.
 #' @export
 #'
-#' @import fda
+#' @details
+#' Given the violation process \eqn{Z_i^\tau(t)} at the quantile \eqn{\tau} obtained by using \code{\link{var.vio}}, for \eqn{t \in[0,1]} and \eqn{1\leq i\leq N}, the function provides an approximate p-value for a test of the null hypothesis of \eqn{H_0}: \eqn{Z_i^\tau(t)} being IID along \eqn{i}.\cr
+#' To test the null hypothesis, the function applies the portmanteau test statistic proposed by Kokoszka, Rice, Shang, (2017),\cr
+#' \eqn{V_{N,K}=N\sum_{h=1}^K||\hat{\gamma}_{h,Z}||^2}, \cr
+#' where \eqn{K} is a pre-set maximum lag length, and the autocovariance function \eqn{\hat{\gamma}_{h,Z}(t,s)=\frac{1}{N}\sum_{i=1}^{N-h}[Z_i(t)-\bar{Z}_i(t)][Z_{i+h}(s)-\bar{Z}(s)]}, for \eqn{||\cdot ||} is the \eqn{L^2} norm, and \eqn{\bar{Z}(t)=1/N\sum_{i=1}^N Z_i(t)}.
 #'
-#' @seealso \code{\link{basis.pp}} \code{\link{basis.fsnn}} \code{\link{basis.pf}}
+#' @seealso \code{\link{var.forecast}} \code{\link{var.vio}} \code{\link{backtest.unbias}}
+#'
 #' @examples
-#' # generate discrete evaluations of the FARCH process.
-#' fd = dgp.farch(50,100)
-#' fd_arch = fd$arch_mat
+#' # generate discrete evaluations of the FGARCH(1,1) process.
+#' grid_point = 50; N = 200
+#' yd = dgp.fgarch(grid_point, N)
+#' yd = yd$garch_mat
+#' # extract data-driven basis functions through the truncated FPCA method.
+#' ba = basis.tfpca(yd,M=2)
+#' basis_est = ba$basis
+#' # fit the curve data and the conditional volatility by using an FGARCH(1,1) model with M=1.
+#' fd = fda::Data2fd(argvals=seq(0,1,len = 50),y=yd,fda::create.bspline.basis(nbasis = 32))
+#' y_inp = basis.score(fd,as.matrix(basis_est[,1]))
+#' garch11_est = est.fGarch(y_inp)
+#' diag_garch = diagnostic.fGarch(garch11_est,basis_est[,1],yd)
+#' sigma_fit = diag_garch$sigma2[,1:N]
+#' error_fit = diag_garch$eps
+#' # get in-sample intra-day VaR curve by assuming a point-wisely Gaussian distributed error term.
+#' var_obj = var.forecast(yd,sigma_fit,error_fit,quantile_v=0.01,Method="normal")
+#' intra_var = var_obj$intraday_VaR
+#' # obtain the violation curves.
+#' intra_vio = var.vio(yd,intra_var)
 #'
-#' # decompose the first truncated non-negative functional principal component.
-#' dt = basis.tfpca(fd_arch,M=1)
-#' tbasis = dt$basis
-#' tve = dt$tve
+#' # backtesting the Independence Hypothesis for the violation curve.
+#' backtest.indep(vio=intra_vio,K=5)
 #'
 #' @references
-#' Cerovecki, C., Francq, C., Hormann, S., Zakoian, J. M. (2019). Functional GARCH models: The quasi-likelihood approach and its applications. Journal of econometrics, 209(2), 353-375.
-basis.tfpca <- function(yd,M){
-  grid_point=nrow(yd)
-  N=ncol(yd)
-  yd=yd-rowMeans(yd)
-
-  times=rep(0,grid_point)
-  for(i in 1:grid_point){times[i]=i/grid_point}
-  squared_y=yd*yd
-  basis_obj=create.bspline.basis(rangeval=c(times[1],1),nbasis=32,norder=4)
-  y_sq_fdsmooth=smooth.basis(argvals=times,y=squared_y,fdParobj=basis_obj)
-  y_sq_fd=y_sq_fdsmooth$fd
-  pca_obj=pca.fd(y_sq_fd,nharm=10,harmfdPar=fdPar(y_sq_fd), centerfns=TRUE)  #centerfns=FALSE.
-  eigen_functs=pca_obj$harmonics
-  eigen_v=pca_obj$values
-  tve=eigen_v/sum(eigen_v)
-  ortho_basis_matrix=matrix(0,nrow=grid_point,ncol=10)
-  for(j in 1:10){indi_basis=eval.fd(times,eigen_functs[j])
-  indi_basis[indi_basis<0]<-0
-  ortho_basis_matrix[,j]=indi_basis}
-  return(list(basis = ortho_basis_matrix[,1:M], tve = tve))
-}
-
-
-#' Sparse and Non-Negative Functional Principal Component Analysis
+#' Christoffersen, P. (2010). Backtesting. Encyclopedia of Quantitative Finance, Wiley. \cr
+#' Kokoszka, P., Rice, G., Shang, H. L. (2017). Inference for the autocovariance of a functional time series under conditional heteroscedasticity. Journal of Multivariate Analysis, 162, 32-50. \cr
+#' Rice, G., Wirjanto, T., Zhao, Y. (2020). Forecasting Value at Risk via intra-Day return curves. International Journal of Forecasting.
 #'
-#' @description basis.fsnn function extracts sparse and non-negative functional principal components from the squared process of intra-day returns.
-#'
-#' @param yd A (grid_point) x (number of observations) matrix drawn from N curves.
-#' @param M The number/order of basis functions, by default \eqn{M = 10}.
-#'
-#' @return List of objects:
-#' @return basis: a (grid_point) x (M) matrix containing discrete evaluations of M sparse and non-negative functional principal components.
-#' @return tve: the total variations explained by each sparse and non-negative functional principal component.
-#'
-#' @export
-#'
-#' @importFrom nsprcomp nsprcomp
-#' @import fda
-#'
-#' @seealso \code{\link{basis.pp}} \code{\link{basis.tfpca}} \code{\link{basis.pf}}
-#' @examples
-#' # generate discrete evaluations of the FARCH process.
-#' fd = dgp.farch(50,100)
-#' fd_arch = fd$arch_mat
-#'
-#' # decompose the first sparse and non-negative functional principal component.
-#' basis.fsnn(fd_arch,M=1)
-#'
-#' @references
-#' Rice, G., Wirjanto, T., Zhao, Y. (2020). Functional GARCH-X model with an application to forecasting crude oil return curves. Working Paper.
-basis.fsnn <- function(yd, M){
-  grid_point = nrow(yd)
-  N = ncol(yd)
-  yd = yd-rowMeans(yd)
+backtest.indep <- function(vio, K){
 
-  times = rep(0,grid_point)
-  for(i in 1:grid_point){times[i] = i/grid_point}
-  squared_y = yd*yd
+  T_statistic <- function(fdata, lag_val){
+    T = nrow(fdata)
+    p = ncol(fdata)
+    # calculate autocovariance function
 
-  nspca.fd <- function(fdobj, nharm = 2, harmfdPar=fdPar(fdobj),
-                       centerfns = TRUE,samplesize){
-    meanfd = mean.fd(fdobj)
-    if (centerfns) {
-      fdobj = center.fd(fdobj)
-    }
+    gamma_l <- function(fdata, lag){
+      T = nrow(fdata)
+      center_dat = t(scale(fdata, center = TRUE, scale = FALSE))
 
-    #  get coefficient matrix and its dimensions
-
-    coef = fdobj$coefs
-
-    coefd = dim(coef) # dim=[samplesize,nbasis]
-    ndim  = length(coefd)
-    nrep  = coefd[2]
-    coefnames = dimnames(coef)
-    if (nrep < 2) stop("PCA not possible without replications.")
-
-    basisobj = fdobj$basis
-    nbasis = basisobj$nbasis
-    type = basisobj$type
-
-    #  set up HARMBASIS
-
-    harmbasis = harmfdPar$fd$basis
-    nhbasis = harmbasis$nbasis
-
-    #  set up LFDOBJ and LAMBDA
-
-    Lfdobj = harmfdPar$Lfd
-    lambda = harmfdPar$lambda
-
-    #  compute CTEMP whose cross product is needed
-
-    if (ndim == 3) {
-      nvar = coefd[3]
-      ctemp = matrix(0, nvar * nbasis, nrep)
-      for(j in 1:nvar) {
-        index = 1:nbasis + (j - 1) * nbasis
-        ctemp[index,  ] = coef[,  , j]
+      gamma_lag_sum = 0
+      for(ij in 1:(T - lag)){
+        gamma_lag_sum = gamma_lag_sum + t(as.matrix(center_dat[,ij]) %*% t(as.matrix(center_dat[,(ij + lag)])))
       }
-    } else {
-      nvar = 1
-      ctemp = coef
+      return(gamma_lag_sum/T)
+    }
+    gamma_hat = gamma_l(fdata = fdata, lag = lag_val)
+    T_h = T * ((1/p)^2) * sum(gamma_hat^2)
+    return(T_h)
+  }
+
+  # Portmanteau test statistics
+  gaPort.stat <- function(H, datmat){
+    vals = rep(0,H)
+    for(j in 1:H){
+      vals[j] = T_statistic(t(datmat), j)
+    }
+    return(sum(vals))
+  }
+
+  # useful inner functions
+  eta <- function(i, j, datmat){
+    T = dim(datmat)[2]
+    p = dim(datmat)[1]
+    l = max(c(i,j))
+    sum1 = array(0, c(p, p, p, p))
+    for(k in (l+1):T){
+      sum1 = sum1 + datmat[,k-i] %o% datmat[,k] %o% datmat[,k-j] %o% datmat[,k]
+    }
+    return(sum1/T)
+  }
+
+  etaM <- function(i, datmat){
+    T = dim(datmat)[2]
+    p = dim(datmat)[1]
+    l = i
+    sum1 = array(0, c(p,p))
+    for(k in (l+1):T){
+      sum1 = sum1 + (datmat[,k-i])^2 %o% (datmat[,k])^2
+    }
+    return(sum1/T)
+  }
+
+  etapopM <- function(H, datmat){
+    etal = list()
+    for(j in 1:H){
+      etal[[j]] = list()
+    }
+    for(k in 1:H){
+      etal[[k]] = etaM(k, datmat)
+    }
+    return(etal)
+  }
+
+  mean.W.2 <- function(x.e, H, datmat){
+    sum1 = 0
+    p = dim(datmat)[1]
+    for(j in 1:H){
+      sum1 = sum1 + sum(x.e[[j]])
+    }
+    return(sum1/p^2)
+  }
+
+
+  etapopNvarMC2 <- function(H, datmat, len1, len2){
+    sum1 = 0
+
+    rref = runif(len1, 0, 1)
+    rref = sort(rref)
+    rrefind = round(rref * dim(datmat)[1])
+    rrefind[which(rrefind == 0)] = 1
+
+    rrefG = c(0, rref)
+    xd = diff(rrefG)
+    gmat = xd %o% xd %o% xd %o% xd
+
+    for(m in 1:H){
+      x = eta(m, m, datmat[rrefind,])
+      sum1 = sum1 + sum((x*x)*gmat)
     }
 
-    indi_pc=nsprcomp(t(ctemp),k=nbasis,nneg=TRUE,center = FALSE)
-    eigvalc=(indi_pc$sdev)^2
-    eigvecc=indi_pc$rotation[, 1:nharm] # check the defination of nsprcomp
+    rref2 = runif(len2, 0, 1)
+    rref2 = sort(rref2)
+    rrefind2 = round(rref2 * dim(datmat)[1])
+    rrefind2[which(rrefind2 == 0)] = 1
+    rrefG2 = c(0, rref2)
+    xd2 = diff(rrefG2)
+    gmat2 = xd2 %o% xd2 %o% xd2 %o% xd2
 
-    sumvecc = apply(eigvecc, 2, sum)
-    eigvecc[,sumvecc < 0] =  - eigvecc[, sumvecc < 0]
+    if(H > 1){
+      for(j in 1:(H-1)){
+        for(k in (j+1):H){
+          if((abs(k-j)) < 3){
+            x = eta(j, k, datmat[rrefind,])
+            #sum1=sum1+sum( (x.e[[j]][[k]])^2)
+            sum1 = sum1 + 2 * sum((x*x)*gmat)
+          }#end if
 
-    varprop = eigvalc[1:nharm]/sum(eigvalc)
-
-    #  set up harmfd
-
-    if (nvar == 1) {
-      harmcoef = eigvecc
-    } else {
-      harmcoef = array(0, c(nbasis, nharm, nvar))
-      for (j in 1:nvar) {
-        index = 1:nbasis + (j - 1) * nbasis
-        temp = eigvecc[index,  ]
-        harmcoef[,  , j] =  temp #slove(Wmat)%*% temp
+          if((abs(k-j)) >= 3){
+            x = eta(j, k, datmat[rrefind2,])
+            #sum1=sum1+sum( (x.e[[j]][[k]])^2)
+            sum1 = sum1 + 2 * sum((x*x)*gmat2)
+          }
+        }
       }
     }
-
-    harmnames = rep("", nharm)
-    for(i in 1:nharm)
-      harmnames[i] = paste("PC", i, sep = "")
-    if(length(coefd) == 2)
-      harmnames = list(coefnames[[1]], harmnames,"values")
-    if(length(coefd) == 3)
-      harmnames = list(coefnames[[1]], harmnames, coefnames[[3]])
-    harmfd = fd(harmcoef, harmbasis, harmnames)
-
-    #  set up harmscr
-
-    if (nvar == 1) {
-      harmscr = inprod(fdobj, harmfd)
-    } else {
-      harmscr = array(0, c(nrep,   nharm, nvar))
-      coefarray = fdobj$coefs
-      harmcoefarray = harmfd$coefs
-      for (j in 1:nvar) {
-        fdobjj= fd(as.matrix(    coefarray[,,j]), basisobj)
-        harmfdj = fd(as.matrix(harmcoefarray[,,j]), basisobj)
-        harmscr[,,j] = inprod(fdobjj, harmfdj)
-      }
-    }
-
-    pcafd = list(harmfd, eigvalc, harmscr, varprop, meanfd)
-    class(pcafd) = "pca.fd"
-    names(pcafd) = c("harmonics", "values", "scores", "varprop", "meanfd")
-
-    return(pcafd)
+    return(2 * sum1)
   }
 
-  # smooth data into functional curves
-  basis_obj=create.bspline.basis(rangeval=c(times[1],1),nbasis=32,norder=4)
-  y_sq_fdsmooth=smooth.basis(argvals=times,y=squared_y,fdParobj=basis_obj)
-  y_sq_fd=y_sq_fdsmooth$fd
+  vio = vio - rowMeans(vio)
+  len1 = 20;len2 = 15; # parameters for Monte Carlo integral, can be altered.
+  res = gaPort.stat(K, vio)
+  x.e = etapopM(K, vio)
+  res2 = mean.W.2(x.e, K, vio)
+  res3 = etapopNvarMC2(K, vio, len1, len2)
+  beta = res3/(2 * res2)
+  nu = (2 * res2^2)/res3
 
-  # get sparse and non-negative basis
-  pca_obj=nspca.fd(y_sq_fd,nharm=10,harmfdPar=fdPar(y_sq_fd),centerfns = TRUE) # by default to compute the first 10 principal components
-  eigen_functs=pca_obj$harmonics
-  eigen_v=pca_obj$values
-  tve=eigen_v/sum(eigen_v)
-  ortho_basis_matrix=matrix(0,nrow=grid_point,ncol=10)
-  for(j in 1:10){ortho_basis_matrix[,j]=eval.fd(times,eigen_functs[j])}
-
-  return(list(basis = ortho_basis_matrix[,1:M], tve = tve))
-}
-
-
-
-
-
-#' Predictive Factors
-#'
-#' @description basis.pf function extracts non-negative predictive factors from the squared process of conditionally heteroscedastic curves, presumably, so that they may be modelled with a Functional GARCH model subsequently.
-#'
-#' @param yd A (grid_point) x (number of observations) matrix drawn from N discrete evaluation curves.
-#' @param M The number/order of basis functions, by default \eqn{M = 10}.
-#' @param a The regularization parameter with recommended values of 0.73 - 0.75.
-#' @param h The forecasting horizon.
-#'
-#' @return List of objects:
-#' @return basis: a (grid_point) x (M) matrix containing discrete evaluations of M non-negative predictive factors.
-#' @return tve: the total variations explained by each non-negative predictive factor.
-#'
-#' @export
-#' @importFrom QZ qz.geigen
-#'
-#' @seealso \code{\link{basis.pp}} \code{\link{basis.tfpca}} \code{\link{basis.fsnn}}
-#' @examples
-#' # generate discrete evaluations of the FARCH process.
-#' fd = dgp.farch(50,100)
-#' fd_arch = fd$arch_mat
-#'
-#' # decompose the first two non-negative predictive factors.
-#' basis.pf(fd_arch,M=2,a=0.75,h=1)
-#'
-#' @references
-#' Rice, G., Wirjanto, T., Zhao, Y. (2020). Functional GARCH-X model with an application to forecasting crude oil return curves. Working Paper.
-basis.pf<-function(yd,M,a,h){
-
-  est_cov<-function(yd,h){
-    #h: forecast horizon
-    yd=yd-rowMeans(yd)
-    # dimension
-    n = ncol(yd)
-    # Calculate Autocovariance
-    C = yd%*%t(yd)/n
-    # Calcualte Crosscovariance
-    C1 = yd[,((h+1):n)]%*%t(yd[,(1:(n-h))])/(n-h)
-    return(list(C, C1))
-  }
-
-  d = nrow(yd)
-  C_est=est_cov(yd,h)
-  C=C_est[[1]]
-  C1=C_est[[2]]
-
-  # Calculate Ca
-  Ca = C+a*diag(d)
-
-  # Find Predictive Factors
-  aaa = t(C1)%*%C1
-
-  out = qz.geigen(aaa, B = Ca, only.values = FALSE)
-  # eigen values and vectors
-  D1 = out$ALPHA
-  V1 = out$V
-
-  Dhat1=D1[1:M]
-  Vhat1=V1[,1:M]
-
-  VV=sqrt(1./diag(t(Vhat1)%*%Ca%*%Vhat1))
-  Vhat1=Vhat1%*%diag(VV)
-  R=Vhat1
-
-  F=C1%*%R
-
-  # truncate the negative part
-  if(any(F[,1]<0)==TRUE){
-    F=-F}
-  F[F<0]<-0
-
-  tve=as.vector(rep(NA,length(D1)))
-  for (i in 1:length(D1)){
-    tve[i]=D1[i]/sum(D1)
-  }
-
-  return(list(basis = F, tve = tve))
+  return(1 - pchisq(res/beta, df = nu))
 }

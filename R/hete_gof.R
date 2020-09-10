@@ -835,7 +835,6 @@ gof.fgarch <- function (yd, basis, model, K=NULL, pplot=NULL, max_eval=10000){
     return(1 - pchisq(stat/beta, df = nu))
   }
 
-
   if(missing(K)) {
     K=20}
   stat_pvalue=gof_pvalue(error_fit,sigma_fit,basis,y_vec,sigma_2_proj_coefs,para,K)
@@ -847,10 +846,10 @@ gof.fgarch <- function (yd, basis, model, K=NULL, pplot=NULL, max_eval=10000){
     kseq=1:20
     pmat=c(rep(1,20))
     for (i in 1:20){
-      pmat[i]=gof_pvalue(error_fit,sigma_fit,basis,y_vec,sigma_2_proj_coefs,para,kseq[i])[2]
+      pmat[i]=gof_pvalue(error_fit,sigma_fit,basis,y_vec,sigma_2_proj_coefs,para,kseq[i])
     }
     x<-1:20
-    plot(x,pmat, col="black",type="l",ylim=c(0,1.1),xlab="Lag",ylab="P-Values",main="P-values of Goodness of Fit test")
+    plot(x,pmat, col="black",type="l",ylim=c(0,1.2),xlab="Lag",ylab="P-Values",main="P-values of Goodness of Fit test")
     abline(h=0.1, col="red")
   }
 
