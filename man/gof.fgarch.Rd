@@ -4,14 +4,14 @@
 \alias{gof.fgarch}
 \title{Goodness-of-fit Test for Functional ARCH/GARCH Model}
 \usage{
-gof.fgarch(yd, y_vec, basis, K = NULL, pplot = NULL, max_eval = 10000)
+gof.fgarch(yd, basis, model, K = NULL, pplot = NULL, max_eval = 10000)
 }
 \arguments{
 \item{yd}{A (grid_point) x (number of observations) matrix drawn from N discrete evaluation curves.}
 
-\item{y_vec}{(number of observations) x (number of basis functions) matrix of projections of squared observations.}
-
 \item{basis}{The M-dimensional basis functions.}
+
+\item{model}{A string to indicate which model will be estimated: "arch" - FARCH(1); "garch" - FGARCH(1,1).}
 
 \item{K}{The statistic will be based on H lag autocorrelation coefficients. If it is missing, a default value "K=20" is used.}
 
@@ -35,12 +35,9 @@ yd = dgp.fgarch(grid_point, N)
 yd = yd$garch_mat
 ba = basis.tfpca(yd,M=2)
 basis_est = ba$basis
-# fit the curve data and forecast the conditional volatility with an FGARCH(1,1) model.
-fd = fda::Data2fd(argvals=seq(0,1,len = grid_point),y=yd,fda::create.bspline.basis(nbasis = 32))
-y_inp = basis.score(fd,as.matrix(basis_est[,1]))
 
 # test the adequacy of the FGARCH(1,1) model.
-gof.fgarch(yd,y_inp[,1],basis_est[,1],K=3)
+gof.fgarch(yd,basis_est[,1],"arch",K=5)
 
 }
 \references{
