@@ -215,8 +215,8 @@ est.fArch=function(y_vec,q=1){
 #' This function allows you to fit a funcGARCH(p,q) using QMLE, given the matrix of squared projections onto a finite number of basis functions.
 #'
 #' @param y_vec (number of observations) x (number of basis functions) matrix of projections of squared observations.
-#' @param p order of the depedence on past squared observations.
-#' @param q order of the depedence on past volatilities.
+#' @param p order of the depedence on past volatilities.
+#' @param q order of the depedence on past squared observations.
 #'
 #' @return List of model paramters:
 #' @return d: d Parameter vector, for intercept function \eqn{\delta}. See Aue et. al 2017/Cerovecki2019
@@ -744,9 +744,9 @@ diagnostic.fGarch=function(params,basis,yd,p=0,q=1,xd=NULL){
   fd_fit=sqrt(abs(sigma2_fit[,1:N]))*error_sim(grid_point,N)
 
   # kernel coefficients
-  kernel_coef = list(alpha = alpha_Op_hat)
-  if(p!=0){kernel_coef = list(alpha = alpha_Op_hat, beta = beta_Op_hat)}
-  if(missing(xd)==FALSE){kernel_coef = list(alpha = alpha_Op_hat, beta = beta_Op_hat, gamma = gamma_Op_hat)}
+  kernel_coef = list(delta = delta_hat, alpha = alpha_Op_hat)
+  if(p!=0){kernel_coef = list(delta = delta_hat, alpha = alpha_Op_hat, beta = beta_Op_hat)}
+  if(missing(xd)==FALSE){kernel_coef = list(delta = delta_hat, alpha = alpha_Op_hat, beta = beta_Op_hat, gamma = gamma_Op_hat)}
 
   return(list(eps = error_fit, sigma2 = sigma2_fit, yfit = fd_fit, kernel_op = kernel_coef))
 }
