@@ -647,7 +647,7 @@ diagnostic.fGarch=function(params,basis,yd,p=0,q=1,xd=NULL){
   As=params$As
   if(p!=0){
     Bs=params$Bs}
-  if(missing(xd)==FALSE){
+  if( is.null(xd) == FALSE){
     Gs=params$Gs
   }
 
@@ -692,7 +692,7 @@ diagnostic.fGarch=function(params,basis,yd,p=0,q=1,xd=NULL){
     }
   }
 
-  if(missing(xd)==FALSE){
+  if(is.null(xd) == FALSE){
     gamma_M=matrix(0,NROW(times),NROW(times))
     G_mat=as.matrix(Gs[[h]])
     temp_gamma_m=0
@@ -722,7 +722,7 @@ diagnostic.fGarch=function(params,basis,yd,p=0,q=1,xd=NULL){
           fit_garch_op = fit_garch_op + int_approx(beta_Op_hat[[h]][j,] * sigma2_fit[,i-h])}
       }
       sigma2_fit[j,i] = delta_hat[j] + fit_arch_op + fit_garch_op
-      if(missing(xd)==FALSE){
+      if( is.null(xd) ==FALSE){
         sigma2_fit[j,i] = delta_hat[j] + fit_arch_op + fit_garch_op + int_approx(gamma_Op_hat[j,] * xd[,i-1])
       }
     }
@@ -746,7 +746,7 @@ diagnostic.fGarch=function(params,basis,yd,p=0,q=1,xd=NULL){
   # kernel coefficients
   kernel_coef = list(delta = delta_hat, alpha = alpha_Op_hat)
   if(p!=0){kernel_coef = list(delta = delta_hat, alpha = alpha_Op_hat, beta = beta_Op_hat)}
-  if(missing(xd)==FALSE){kernel_coef = list(delta = delta_hat, alpha = alpha_Op_hat, beta = beta_Op_hat, gamma = gamma_Op_hat)}
+  if(is.null(xd) == FALSE){kernel_coef = list(delta = delta_hat, alpha = alpha_Op_hat, beta = beta_Op_hat, gamma = gamma_Op_hat)}
 
   return(list(eps = error_fit, sigma2 = sigma2_fit, yfit = fd_fit, kernel_op = kernel_coef))
 }

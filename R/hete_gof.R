@@ -38,7 +38,7 @@
 #' Rice, G., Wirjanto, T., Zhao, Y. (2020). Tests for conditional heteroscedasticity of functional data. Journal of Time Series Analysis.
 fun_hetero <- function (yd, K=NULL, stat_Method, pplot=NULL){
 
-  if(missing(K)) {
+  if(is.null(K) == TRUE) {
     K=20
   }
 
@@ -168,7 +168,7 @@ fun_hetero <- function (yd, K=NULL, stat_Method, pplot=NULL){
     return(list(stats = stat, p_value = pv))
   }
 
-  if(missing(stat_Method)) {
+  if(is.null(stat_Method) == TRUE) {
     stat_Method="functional"
   }
 
@@ -181,7 +181,7 @@ fun_hetero <- function (yd, K=NULL, stat_Method, pplot=NULL){
          },
          stop("Enter something to switch me!"))
 
-  if(missing(pplot)) {
+  if(is.null(pplot) == TRUE) {
     stat_p=stat_p
   }
   else if(pplot==1){
@@ -835,11 +835,11 @@ gof.fgarch <- function (yd, basis, model, K=NULL, pplot=NULL, max_eval=10000){
     return(1 - pchisq(stat/beta, df = nu))
   }
 
-  if(missing(K)) {
+  if( is.null(K) == TRUE) {
     K=20}
   stat_pvalue=gof_pvalue(error_fit,sigma_fit,basis,y_vec,sigma_2_proj_coefs,para,K)
 
-  if(missing(pplot)) {
+  if( is.null(pplot) == TRUE) {
     stat_pvalue=stat_pvalue
   }
   else if(pplot==1){

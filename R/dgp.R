@@ -90,7 +90,7 @@ dgp.farch <- function(grid_point, N, beta_par=NULL){
   sim_sigma2_matrix = sim_arch_matrix = matrix(NA, grid_point, no_proc)
   error_matrix = error_sim(grid_point = grid_point, N = no_proc)
 
-  if(missing(beta_par)) {
+  if(is.null(beta_par) == TRUE) {
     beta_par = function(t,s){
       return(16 * t * (1-t) * s * (1-s))
     }
@@ -179,13 +179,13 @@ dgp.fgarch <- function(grid_point, N, alpha_par=NULL, beta_par=NULL){
   error_matrix = error_sim(grid_point = grid_point, N = no_proc)
 
 
-  if(missing(alpha_par)) {
+  if( is.null(alpha_par) == TRUE) {
     alpha_par = function(t,s){
       return(12 * t * (1-t) * s * (1-s))
     }
   }
 
-  if(missing(beta_par)) {
+  if( is.null(beta_par) == TRUE) {
     beta_par = function(t,s){
       return(12 * t * (1-t) * s * (1-s))
     }
