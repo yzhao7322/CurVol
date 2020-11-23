@@ -16,8 +16,8 @@
 #' edata = dgp.fiid(50, 100)
 #' # smooth discrete data into functional curves.
 #' fd = fda::Data2fd(argvals=seq(0, 1, len = 50),y=edata,fda::create.bspline.basis(nbasis = 32))
-#' bern = basis.pp(50, 2)$bern
-#'
+#' basis_poly = basis.est(edata, M=2, "poly")$basis
+#' bern = basis_poly$bern
 #' # get functional scores by projecting the squared process onto Bernstein basis.
 #' y_inp = basis.score(fd, bern)
 basis.score=function(fdata,basis){
@@ -70,8 +70,7 @@ basis.score=function(fdata,basis){
 #' yd = yd$garch_mat
 #' fd = fda::Data2fd(argvals=seq(0,1,len=50),y=yd,fda::create.bspline.basis(nbasis=32))
 #' # extract data-driven basis functions through the truncated FPCA method.
-#' ba = basis.tfpca(yd, M=2)
-#' basis_est = ba$basis
+#' basis_est = basis.est(yd, M=2, "tfpca")$basis
 #'
 #' # fit a FARCH(1) model with the projection M=1.
 #' y_inp = basis.score(fd, basis_est[,1])
@@ -242,8 +241,7 @@ est.fArch=function(y_vec,q=1){
 #' yd = yd$garch_mat
 #' fd = fda::Data2fd(argvals=seq(0,1,len=50),y=yd,fda::create.bspline.basis(nbasis=32))
 #' # extract data-driven basis functions through the truncated FPCA method.
-#' ba = basis.tfpca(yd, M=2)
-#' basis_est = ba$basis
+#' basis_est = basis.est(yd, M=2, "tfpca")$basis
 #'
 #' # fit a FGARCH(1,1) model with the projection M=1.
 #' y_inp = basis.score(fd, basis_est[,1])
@@ -432,8 +430,7 @@ est.fGarch=function(y_vec,p=1,q=1){
 #' fdy = fda::Data2fd(argvals=seq(0,1,len=50),y=yd,fda::create.bspline.basis(nbasis=32))
 #' fdx = fda::Data2fd(argvals=seq(0,1,len=50),y=xd,fda::create.bspline.basis(nbasis=32))
 #' # extract data-driven basis functions through the truncated FPCA method.
-#' ba = basis.tfpca(yd, M=2)
-#' basis_est = ba$basis
+#' basis_est = basis.est(yd, M=2, "tfpca")$basis
 #'
 #' # fit a FGARCH-X model with the projection M=1.
 #' y_inp = basis.score(fdy, basis_est[,1])
@@ -627,8 +624,8 @@ est.fGarchx=function(y_vec,x_vec){
 #' yd = yd$garch_mat
 #' fdy = fda::Data2fd(argvals=seq(0,1,len=50),y=yd,fda::create.bspline.basis(nbasis=32))
 #' # extract data-driven basis functions through the truncated FPCA method.
-#' ba = basis.tfpca(yd, M=2)
-#' basis_est = ba$basis
+#' basis_est = basis.est(yd, M=2, "tfpca")$basis
+#'
 #' # fit the curve data with an FARCH(1) model.
 #' y_inp = basis.score(fdy, basis_est)
 #' arch_est = est.fArch(y_inp)

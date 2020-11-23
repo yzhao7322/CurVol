@@ -33,8 +33,7 @@ The test statistic used is as the same as the \eqn{M_{N,K}} statistic in \code{\
 grid_point=50; N=200
 yd = dgp.fgarch(grid_point, N, "garch")
 yd = yd$garch_mat
-ba = basis.tfpca(yd, M=2)
-basis_est = ba$basis
+basis_est = basis.est(yd, M=2, "tfpca")$basis
 
 # test the adequacy of the FGARCH(1,1) model.
 gof.fgarch(yd, basis_est[,1], "arch", K=5)
@@ -45,5 +44,5 @@ Aue, A., Horvath, L., F. Pellatt, D. (2017). Functional generalized autoregressi
 Rice, G., Wirjanto, T., Zhao, Y. (2020). Tests for conditional heteroscedasticity of functional data. Journal of Time Series Analysis.
 }
 \seealso{
-\code{\link{basis.tfpca}} \code{\link{basis.score}} \code{\link{est.fGarch}} \code{\link{diagnostic.fGarch}}
+\code{\link{basis.est}} \code{\link{basis.score}} \code{\link{est.fGarch}} \code{\link{diagnostic.fGarch}}
 }

@@ -39,8 +39,8 @@ yd = dgp.fgarch(grid_point=50, N=200, "garch")
 yd = yd$garch_mat
 fdy = fda::Data2fd(argvals=seq(0,1,len=50),y=yd,fda::create.bspline.basis(nbasis=32))
 # extract data-driven basis functions through the truncated FPCA method.
-ba = basis.tfpca(yd, M=2)
-basis_est = ba$basis
+basis_est = basis.est(yd, M=2, "tfpca")$basis
+
 # fit the curve data with an FARCH(1) model.
 y_inp = basis.score(fdy, basis_est)
 arch_est = est.fArch(y_inp)

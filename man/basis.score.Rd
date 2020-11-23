@@ -22,8 +22,8 @@ basis.score function returns functional scores by projecting the squared process
 edata = dgp.fiid(50, 100)
 # smooth discrete data into functional curves.
 fd = fda::Data2fd(argvals=seq(0, 1, len = 50),y=edata,fda::create.bspline.basis(nbasis = 32))
-bern = basis.pp(50, 2)$bern
-
+basis_poly = basis.est(edata, M=2, "poly")$basis
+bern = basis_poly$bern
 # get functional scores by projecting the squared process onto Bernstein basis.
 y_inp = basis.score(fd, bern)
 }

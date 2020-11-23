@@ -24,15 +24,14 @@
 #' \eqn{VaR_{i+1}^\tau(t)=\hat{\sigma}_{i+1}(t)\hat{\varepsilon}^\tau(t)}, for \eqn{1\leq i \leq N}, \eqn{t\in[0,1]}, and the percentile \eqn{\tau \in [0,1]},\cr
 #' where the forecats of conditional standard deviation \eqn{\hat{\sigma}_{i+1}(t)} can be obtained by using \code{\link{est.fArch}}, \code{\link{est.fGarch}}, or \code{\link{est.fGarchx}}. Note that when \eqn{t=1}, \eqn{VaR_{i+1}^\tau(1)} is the forecast of daily VaR.
 #'
-#' @seealso \code{\link{basis.tfpca}} \code{\link{basis.score}} \code{\link{est.fGarch}} \code{\link{diagnostic.fGarch}}
+#' @seealso \code{\link{basis.est}} \code{\link{basis.score}} \code{\link{est.fGarch}} \code{\link{diagnostic.fGarch}}
 #' @examples
 #' # generate discrete evaluations of the FGARCH(1,1) process.
 #' grid_point = 50; N = 200
 #' yd = dgp.fgarch(grid_point, N, "garch")
 #' yd = yd$garch_mat
 #' # extract data-driven basis functions through the truncated FPCA method.
-#' ba = basis.tfpca(yd, M=2)
-#' basis_est = ba$basis
+#' basis_est = basis.est(yd, M=2, "tfpca")$basis
 #' # fit the curve data and the conditional volatility by using an FGARCH(1,1) model with M=1.
 #' fd = fda::Data2fd(argvals=seq(0,1,len=50),y=yd,fda::create.bspline.basis(nbasis=32))
 #' y_inp = basis.score(fd, basis_est[,1])
@@ -175,8 +174,7 @@ var.forecast <- function(yd,sigma_pred,error_fit,quantile_v,Method){
 #' yd = dgp.fgarch(grid_point, N, "garch")
 #' yd = yd$garch_mat
 #' # extract data-driven basis functions through the truncated FPCA method.
-#' ba = basis.tfpca(yd, M=2)
-#' basis_est = ba$basis
+#' basis_est = basis.est(yd, M=2, "tfpca")$basis
 #' # fit the curve data and the conditional volatility by using a FGARCH(1,1) model with M=1.
 #' fd = fda::Data2fd(argvals=seq(0,1,len=grid_point),y=yd,fda::create.bspline.basis(nbasis=32))
 #' y_inp = basis.score(fd, basis_est[,1])

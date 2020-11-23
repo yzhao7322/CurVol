@@ -39,8 +39,7 @@ grid_point = 50; N = 200
 yd = dgp.fgarch(grid_point, N, "garch")
 yd = yd$garch_mat
 # extract data-driven basis functions through the truncated FPCA method.
-ba = basis.tfpca(yd, M=2)
-basis_est = ba$basis
+basis_est = basis.est(yd, M=2, "tfpca")$basis
 # fit the curve data and the conditional volatility by using a FGARCH(1,1) model with M=1.
 fd = fda::Data2fd(argvals=seq(0,1,len=grid_point),y=yd,fda::create.bspline.basis(nbasis=32))
 y_inp = basis.score(fd, basis_est[,1])

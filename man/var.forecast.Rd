@@ -42,8 +42,7 @@ grid_point = 50; N = 200
 yd = dgp.fgarch(grid_point, N, "garch")
 yd = yd$garch_mat
 # extract data-driven basis functions through the truncated FPCA method.
-ba = basis.tfpca(yd, M=2)
-basis_est = ba$basis
+basis_est = basis.est(yd, M=2, "tfpca")$basis
 # fit the curve data and the conditional volatility by using an FGARCH(1,1) model with M=1.
 fd = fda::Data2fd(argvals=seq(0,1,len=50),y=yd,fda::create.bspline.basis(nbasis=32))
 y_inp = basis.score(fd, basis_est[,1])
@@ -65,5 +64,5 @@ var_obj$vio_seq
 Rice, G., Wirjanto, T., Zhao, Y. (2020). Forecasting Value at Risk via intra-Day return curves. International Journal of Forecasting.
 }
 \seealso{
-\code{\link{basis.tfpca}} \code{\link{basis.score}} \code{\link{est.fGarch}} \code{\link{diagnostic.fGarch}}
+\code{\link{basis.est}} \code{\link{basis.score}} \code{\link{est.fGarch}} \code{\link{diagnostic.fGarch}}
 }

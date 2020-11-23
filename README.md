@@ -44,28 +44,23 @@ install.packages("CurVol")
 ## R topics documented
 
 1.  backtest.var - backtest the intra-day VaR forecasts
-2.  basis.fsnn - sparse and non-negative functional principal
-    components.
-3.  basis.pf - non-negative predictive factors.
-4.  basis.pp - exponential and Bernstein basis functions.
-5.  basis.tfpca - non-negative truncated functional principal
-    components.
-6.  basis.score - functional scores by projecting the squared process
+2.  basis.est - estimate non-negative basis functions.
+3.  basis.score - functional scores by projecting the squared process
     onto given basis functions.
-7.  dgp.fgarch - generate functional data following the functional
+4.  dgp.fgarch - generate functional data following the functional
     ARCH(1) or GARCH(1,1) process.
-8.  dgp.fiid - generate iid functional data following Ornstein–Uhlenbeck
+5.  dgp.fiid - generate iid functional data following Ornstein–Uhlenbeck
     process.
-9.  diagnostic.fGarch - estimation parameters as the inputs for
+6.  diagnostic.fGarch - estimation parameters as the inputs for
     diagnostic purposes.
-10. est.fArch - estimate functional ARCH (q) model.
-11. est.fGarch - estimate Functional GARCH (p,q) model.
-12. est.fGarchx - estimate Functional GARCH-X model.
-13. fun\_hetero - test conditional heteroscedasticity for functional
+7.  est.fArch - estimate functional ARCH (q) model.
+8.  est.fGarch - estimate Functional GARCH (p,q) model.
+9.  est.fGarchx - estimate Functional GARCH-X model.
+10. fun\_hetero - test conditional heteroscedasticity for functional
     data.
-14. gof.fgarch - goodness-of-fit test for functional ARCH/GARCH model.
-15. intra.return - intra-day return curves: intra-day return (IDR),
+11. gof.fgarch - goodness-of-fit test for functional ARCH/GARCH model.
+12. intra.return - intra-day return curves: intra-day return (IDR),
     cumulative intra-day return (CIDR), overnight cumulative intra-day
     return (OCIDR).
-16. sample\_data - a sample data containing S\&P 500 intra-day price.
-17. var.forecast - forecast daily/intra-day Value-at-Risk.
+13. sample\_data - a sample data containing S\&P 500 intra-day price.
+14. var.forecast - forecast daily/intra-day Value-at-Risk.
