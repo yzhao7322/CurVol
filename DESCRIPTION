@@ -18,5 +18,3 @@ Imports:
 LinkingTo: 
     Rcpp,
     RcppArmadillo
-Suggests: 
-    testthat
