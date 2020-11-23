@@ -69,4 +69,3 @@ install.packages("CurVol")
     return (OCIDR).
 16. sample\_data - a sample data containing S\&P 500 intra-day price.
 17. var.forecast - forecast daily/intra-day Value-at-Risk.
-18. var.vio - calculate the violation process based on Value-at-Risk.

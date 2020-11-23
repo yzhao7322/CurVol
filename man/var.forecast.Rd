@@ -2,7 +2,7 @@
 % Please edit documentation in R/intra_var.R
 \name{var.forecast}
 \alias{var.forecast}
-\title{Predict Daily/intra-day Value-at-Risk}
+\title{Forecast Daily/intra-day Value-at-Risk}
 \usage{
 var.forecast(yd, sigma_pred, error_fit, quantile_v, Method)
 }
@@ -25,6 +25,8 @@ day_VaR: the daily VaR.
 day_ES: the daily expected shortfall.
 
 intraday_VaR: the intra-day VaR curves.
+
+vio_seq: the violation curve for the intra-day VaR curves.
 }
 \description{
 var.forecast function forecasts the daily VaR and intra-day VaR curves according to intra-day return curves.
@@ -52,8 +54,11 @@ sigma_fit = diag_garch$sigma2[,1:N]
 error_fit = diag_garch$eps
 
 # get in-sample intra-day VaR curve by assuming a point-wisely Gaussian distributed error term.
-exr = var.forecast(yd, sigma_fit, error_fit, quantile_v=0.01, Method="normal")
-exr$intraday_VaR
+var_obj = var.forecast(yd, sigma_fit, error_fit, quantile_v=0.01, Method="normal")
+# the intra-day VaR curves
+var_obj$intraday_VaR
+# the violation process
+var_obj$vio_seq
 
 }
 \references{

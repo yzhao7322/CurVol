@@ -551,7 +551,6 @@ gof.fgarch <- function (yd, basis, model, K=NULL, pplot=NULL, max_eval=10000){
       #return(rbind(ded,dey,des))  #  for garch
     }
 
-
     Q0_f<-function(y_2_proj_coefs1){
       # Q0 is a (M+2M^2) x (M+2M^2) matrix
       M=nrow(y_2_proj_coefs1)
@@ -572,7 +571,6 @@ gof.fgarch <- function (yd, basis, model, K=NULL, pplot=NULL, max_eval=10000){
       }
       return(q0_sum/(n-1))
     }
-
 
     J0_f<-function(y_2_proj_coefs1,sigma_2_proj_coefs){
       # J0 is a M x M matrix
@@ -737,7 +735,6 @@ gof.fgarch <- function (yd, basis, model, K=NULL, pplot=NULL, max_eval=10000){
       return(list(A,cov_est,cov_mean,cov_meanA))
     }
 
-
     ## compute the fully functional statistics and p_values
 
     stat = Port2.stat(error_fit,K)
@@ -754,7 +751,6 @@ gof.fgarch <- function (yd, basis, model, K=NULL, pplot=NULL, max_eval=10000){
     xd <- diff(r_samp / grid_point)
     gmat_A <- xd %o% xd
     gmat <- xd %o% xd %o% xd %o% xd
-
 
     rrefind2 <- floor(grid_point * sort(runif(len2, 0, 1)))
     rrefind2[which(rrefind2 == 0)] = 1

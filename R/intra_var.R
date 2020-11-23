@@ -1,4 +1,4 @@
-#' Predict Daily/intra-day Value-at-Risk
+#' Forecast Daily/intra-day Value-at-Risk
 #'
 #' @description var.forecast function forecasts the daily VaR and intra-day VaR curves according to intra-day return curves.
 #'
@@ -12,6 +12,7 @@
 #' @return day_VaR: the daily VaR.
 #' @return day_ES: the daily expected shortfall.
 #' @return intraday_VaR: the intra-day VaR curves.
+#' @return vio_seq: the violation curve for the intra-day VaR curves.
 #'
 #' @export
 #'
@@ -42,8 +43,11 @@
 #' error_fit = diag_garch$eps
 #'
 #' # get in-sample intra-day VaR curve by assuming a point-wisely Gaussian distributed error term.
-#' exr = var.forecast(yd, sigma_fit, error_fit, quantile_v=0.01, Method="normal")
-#' exr$intraday_VaR
+#' var_obj = var.forecast(yd, sigma_fit, error_fit, quantile_v=0.01, Method="normal")
+#' # the intra-day VaR curves
+#' var_obj$intraday_VaR
+#' # the violation process
+#' var_obj$vio_seq
 #'
 #' @references
 #' Rice, G., Wirjanto, T., Zhao, Y. (2020). Forecasting Value at Risk via intra-Day return curves. International Journal of Forecasting.
@@ -129,63 +133,15 @@ var.forecast <- function(yd,sigma_pred,error_fit,quantile_v,Method){
          stop("Enter something to switch me!")
   )
 
-  return(list(day_VaR = daily_var, day_ES = daily_es, intraday_VaR = var_curves))
-}
-
-
-
-#' Violation Process
-#'
-#' @description var.vio function returns a violation curve for the intra-day VaR curves.
-#'
-#' @param yd A (grid_point) x (number of observations) matrix drawn from N functional curves.
-#' @param var_curve A (grid_point) x (number of observations) matrix storing the forecasts of intra-day VaR curves.
-#'
-#' @return A violation process of the intra-day return curves based on the forecasts of intra-day VaR curves.
-#' @export
-#'
-#' @details
-#' Given the intra-day return curves \eqn{x_i(t)}, and the forecasts of intra-day VaR curves \eqn{\widehat{VaR}_i^\tau(t)} obtained from \code{\link{var.forecast}}, the violation process \eqn{Z_i^\tau(t)} can be defined as, \cr
-#' \eqn{Z_i^\tau(t)=I(x_i(t)<\widehat{VaR}_i^\tau(t))}, for \eqn{1\leq i \leq N}, \eqn{t\in[0,1]}, and \eqn{\tau \in [0,1]},\cr
-#' where \eqn{I(\cdot)} is an indicator function.
-#'
-#' @seealso \code{\link{var.forecast}}
-#' @examples
-#' # generate discrete evaluations of the FGARCH(1,1) process.
-#' grid_point = 50; N = 200
-#' yd = dgp.fgarch(grid_point, N, "garch")
-#' yd = yd$garch_mat
-#' # extract data-driven basis functions through the truncated FPCA method.
-#' ba = basis.tfpca(yd, M=2)
-#' basis_est = ba$basis
-#' # fit the curve data and the conditional volatility by using an FGARCH(1,1) model with M=1.
-#' fd = fda::Data2fd(argvals=seq(0,1,len=grid_point),y=yd,fda::create.bspline.basis(nbasis=32))
-#' y_inp = basis.score(fd,basis_est[,1])
-#' garch11_est = est.fGarch(y_inp)
-#' diag_garch = diagnostic.fGarch(garch11_est, basis_est[,1], yd)
-#' # get the in-sample fitting of conditional variance.
-#' sigma_fit = diag_garch$sigma2[,1:N]
-#' error_fit = diag_garch$eps
-#' # get in-sample intra-day VaR curve by assuming a point-wisely Gaussian distributed error term.
-#' var_obj = var.forecast(yd, sigma_fit, error_fit, quantile_v=0.01, Method="normal")
-#' intra_var = var_obj$intraday_VaR
-#'
-#' # compute the violation curve.
-#' var.vio(yd, intra_var)
-#'
-#' @references
-#' Rice, G., Wirjanto, T., Zhao, Y. (2020). Forecasting Value at Risk via intra-Day return curves. International Journal of Forecasting.
-var.vio <- function(yd,var_curve){
-  point_grid=nrow(yd)
   n=ncol(yd)
   y_vio=matrix(0,point_grid,n)
   for (i in 1:n){
-    ind=as.matrix(yd)[,i]<as.matrix(var_curve)[,i]
+    ind=as.matrix(yd)[,i]<as.matrix(var_curves)[,i]
     y_vio[ind,i]=1
   }
-  return(y_vio)
-}
 
+  return(list(day_VaR = daily_var, day_ES = daily_es, intraday_VaR = var_curves, vio_seq = y_vio))
+}
 
 
 #' Backtest Intra-day VaR forecasts
@@ -204,14 +160,14 @@ var.vio <- function(yd,var_curve){
 #' @export
 #'
 #' @details
-#' Given the violation process \eqn{Z_i^\tau(t)} at the quantile \eqn{\tau} obtained by using \code{\link{var.vio}}, the function computes P-values of two hypothesis tests:
+#' Given the violation process \eqn{Z_i^\tau(t)} at the quantile \eqn{\tau}, the function computes P-values of two hypothesis tests:
 #' (1) unbiasedness \eqn{H_0}: \eqn{E(Z_i^\tau(t)-\tau)=0}, for all \eqn{t \in[0,1]}, \eqn{1\leq i\leq N}. The test statistics,\cr
 #' \eqn{T_N=N|| \bar{Z}(t)-\tau||^2} is employed, where \eqn{||\cdot ||} is the \eqn{L^2} norm, and \eqn{\bar{Z}(t)=1/N\sum_{i=1}^N Z_i(t)}.
 #' (2) independence \eqn{H_0}: \eqn{Z_i^\tau(t)} is independent, a portmanteau test statistic in used (Kokoszka et al., 2017),\cr
 #' \eqn{V_{N,K}=N\sum_{h=1}^K||\hat{\gamma}_{h,Z}||^2}, \cr
 #' where \eqn{K} is a pre-set maximum lag length, and the autocovariance function \eqn{\hat{\gamma}_{h,Z}(t,s)=\frac{1}{N}\sum_{i=1}^{N-h}[Z_i(t)-\bar{Z}_i(t)][Z_{i+h}(s)-\bar{Z}(s)]}, for \eqn{||\cdot ||} is the \eqn{L^2} norm, and \eqn{\bar{Z}(t)=1/N\sum_{i=1}^N Z_i(t)}.
 #'
-#' @seealso \code{\link{var.forecast}} \code{\link{var.vio}}
+#' @seealso \code{\link{var.forecast}}
 #'
 #' @examples
 #' # generate discrete evaluations of the FGARCH(1,1) process.
@@ -232,8 +188,8 @@ var.vio <- function(yd,var_curve){
 #' # get in-sample intra-day VaR curve by assuming a point-wisely Gaussian distributed error term.
 #' var_obj = var.forecast(yd, sigma_fit, error_fit, quantile_v=0.01, Method="normal")
 #' intra_var = var_obj$intraday_VaR
-#' # compute the violation curves.
-#' intra_vio = var.vio(yd, intra_var)
+#' # get the violation curves.
+#' intra_vio = var_obj$vio_seq
 #'
 #' # backtesting the Unbiasedness Hypothesis for the violation curve.
 #' pvalues = backtest.var(vio=intra_vio, tau=0.01)

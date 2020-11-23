@@ -26,7 +26,7 @@ independent: the p-value of the independence test.
 backtest.var function backtests the unbiasedness and the independence hypotheses for the intra-day VaR curve forecasts.
 }
 \details{
-Given the violation process \eqn{Z_i^\tau(t)} at the quantile \eqn{\tau} obtained by using \code{\link{var.vio}}, the function computes P-values of two hypothesis tests:
+Given the violation process \eqn{Z_i^\tau(t)} at the quantile \eqn{\tau}, the function computes P-values of two hypothesis tests:
 (1) unbiasedness \eqn{H_0}: \eqn{E(Z_i^\tau(t)-\tau)=0}, for all \eqn{t \in[0,1]}, \eqn{1\leq i\leq N}. The test statistics,\cr
 \eqn{T_N=N|| \bar{Z}(t)-\tau||^2} is employed, where \eqn{||\cdot ||} is the \eqn{L^2} norm, and \eqn{\bar{Z}(t)=1/N\sum_{i=1}^N Z_i(t)}.
 (2) independence \eqn{H_0}: \eqn{Z_i^\tau(t)} is independent, a portmanteau test statistic in used (Kokoszka et al., 2017),\cr
@@ -52,8 +52,8 @@ error_fit = diag_garch$eps
 # get in-sample intra-day VaR curve by assuming a point-wisely Gaussian distributed error term.
 var_obj = var.forecast(yd, sigma_fit, error_fit, quantile_v=0.01, Method="normal")
 intra_var = var_obj$intraday_VaR
-# compute the violation curves.
-intra_vio = var.vio(yd, intra_var)
+# get the violation curves.
+intra_vio = var_obj$vio_seq
 
 # backtesting the Unbiasedness Hypothesis for the violation curve.
 pvalues = backtest.var(vio=intra_vio, tau=0.01)
@@ -67,5 +67,5 @@ Kokoszka, P., Rice, G., Shang, H. L. (2017). Inference for the autocovariance of
 Rice, G., Wirjanto, T., Zhao, Y. (2020). Forecasting Value at Risk via intra-Day return curves. International Journal of Forecasting.
 }
 \seealso{
-\code{\link{var.forecast}} \code{\link{var.vio}}
+\code{\link{var.forecast}}
 }

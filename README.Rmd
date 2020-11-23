@@ -53,15 +53,15 @@ install.packages("CurVol")
 
 ## R topics documented
 
-1.  backtest.var - backtest the intra-day VaR forecasts
-2.  basis.fsnn - sparse and non-negative functional principal
+1. backtest.var - backtest the intra-day VaR forecasts
+2. basis.fsnn - sparse and non-negative functional principal
     components.
-3.  basis.pf - non-negative predictive factors.
-4.  basis.pp - exponential and Bernstein basis functions.
-5.  basis.tfpca - non-negative truncated functional principal
+3. basis.pf - non-negative predictive factors.
+4. basis.pp - exponential and Bernstein basis functions.
+5. basis.tfpca - non-negative truncated functional principal
     components.
-6.  basis.score - functional scores by projecting the squared process onto     given basis functions.
-7.  dgp.fgarch - generate functional data following the functional
+6. basis.score - functional scores by projecting the squared process onto     given basis functions.
+7. dgp.fgarch - generate functional data following the functional
     ARCH(1) or GARCH(1,1) process.
 8. dgp.fiid - generate iid functional data following Ornstein–Uhlenbeck       process.
 9. diagnostic.fGarch - estimation parameters as the inputs for diagnostic     purposes.
@@ -75,4 +75,3 @@ install.packages("CurVol")
     return (OCIDR).
 16. sample\_data - a sample data containing S\&P 500 intra-day price.
 17. var.forecast - forecast daily/intra-day Value-at-Risk.
-18. var.vio - calculate the violation process based on Value-at-Risk.
