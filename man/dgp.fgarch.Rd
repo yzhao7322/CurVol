@@ -2,47 +2,53 @@
 % Please edit documentation in R/dgp.R
 \name{dgp.fgarch}
 \alias{dgp.fgarch}
-\title{Data Generating Process - Functional GARCH Process}
+\title{Data Generating Process - Functional ARCH/GARCH Process}
 \usage{
-dgp.fgarch(grid_point, N, alpha_par = NULL, beta_par = NULL)
+dgp.fgarch(grid_point, N, type, alpha_par = NULL, beta_par = NULL)
 }
 \arguments{
 \item{grid_point}{The number of grid point in each curve observation.}
 
 \item{N}{The sample size.}
 
-\item{alpha_par}{The ARCH kernel coefficient function in the conditional volatility equation. If it is missing, "\eqn{12 * t * (1-t) * s * (1-s)}" is used, for \eqn{t\in[0,1]} and \eqn{s\in[0,1]}.}
+\item{type}{A string to switch data generating process between "arch" - functional ARCH and "garch" - functional GARCH.}
 
-\item{beta_par}{The GARCH kernel coefficient function in the conditional volatility equation. If it is missing, "\eqn{12 * t * (1-t) * s * (1-s)}" is used, for \eqn{t\in[0,1]} and \eqn{s\in[0,1]}.}
+\item{alpha_par}{The ARCH kernel coefficient function in the conditional volatility equation. If it is missing, "\eqn{12 * t * (1-t) * s * (1-s)}" is used to generate FGARCH, and "\eqn{16 * t * (1-t) * s * (1-s)}" is used to generate FARCH, for \eqn{t\in[0,1]} and \eqn{s\in[0,1]}.}
+
+\item{beta_par}{The GARCH kernel coefficient function in the conditional volatility equation. If it is missing, "\eqn{12 * t * (1-t) * s * (1-s)}" is used to generate FGARCH, for \eqn{t\in[0,1]} and \eqn{s\in[0,1]}.}
 }
 \value{
 List of generated processes:
 
-garch_mat: FARCH sequences, where the finite realization of curves are stored in columns,
+garch_mat: FARCH/GARCH sequences, where the finite realization of curves are stored in columns;
 
 sigma_mat: Conditional volatility sequences,  where the finite realization of curves are stored in columns.
 }
 \description{
-dgp.fgarch function generates an functional GARCH(1,1) process.
+dgp.fgarch function generates functional curve data following the functional ARCH(1) or GARCH(1,1) process.
 }
 \details{
-\eqn{x_i(t)} is generated to follow an FGARCH(1,1) process, such that,\cr
+If \eqn{x_i(t)} follows an FARCH(1) process,\cr
+\eqn{x_i(t)=\sigma_i(t)\varepsilon_i(t)}, \eqn{t \in [0,1]},\cr
+\eqn{\sigma_i^2(t)=\omega(t)+\int \alpha(t,s) x^2_{i-1}(s)ds}.\cr
+
+If \eqn{x_i(t)} follows an FGARCH(1,1) process,\cr
 \eqn{x_i(t)=\sigma_i(t)\varepsilon_i(t)}, \eqn{t \in [0,1]},\cr
 \eqn{\sigma_i^2(t)=\omega(t)+\int \alpha(t,s) x^2_{i-1}(s)ds+\int \beta(t,s) \sigma^2_{i-1}(s)ds},\cr
-where the innovation \eqn{\varepsilon_i(t)} follows an Ornstein–Uhlenbeck process \code{\link{dgp.fiid}}, and the kernel coefficients \eqn{\omega(t)=0.1t(1-t)}, \eqn{\alpha(t,s)=\beta(t,s) = 12t(1-t)s(1-s)}.
+where the innovation \eqn{\varepsilon_i(t)} follows an Ornstein–Uhlenbeck process \code{\link{dgp.fiid}}, and the constant coefficient \eqn{\omega(t)=0.1t(1-t)}.
 }
 \examples{
-# generate discrete evaluations of 100 FGARCH curves that each curve is realized on 50 grid points.
-yd = dgp.fgarch(50,100)
+# generate discrete evaluations of 100 FARCH curves that each curve is realized on 50 grid points.
+yd = dgp.fgarch(50, 100, "garch")
 yd_garch = yd$garch_mat
 
 # smooth discrete data into functional curves.
-fd = fda::Data2fd(argvals=seq(0,1,len = 50),y=yd_garch,fda::create.bspline.basis(nbasis = 32))
-
+fd = fda::Data2fd(argvals=seq(0,1,len=50),y=yd_garch,fda::create.bspline.basis(nbasis=32))
 }
 \references{
+Hormann, S., Horvath, L., Reeder, R. (2013). A functional version of the ARCH model. Econometric Theory, 29(2), 267-288.
 Aue, A., Horvath, L., F. Pellatt, D. (2017). Functional generalized autoregressive conditional heteroskedasticity. Journal of Time Series Analysis, 38(1), 3-21.
 }
 \seealso{
-\code{\link{dgp.fiid}} \code{\link{dgp.farch}}
+\code{\link{dgp.fiid}}
 }

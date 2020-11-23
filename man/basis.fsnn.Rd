@@ -23,11 +23,11 @@ basis.fsnn function extracts sparse and non-negative functional principal compon
 }
 \examples{
 # generate discrete evaluations of the FARCH process.
-yd = dgp.farch(50,100)
-yd_arch = yd$arch_mat
+yd = dgp.fgarch(50, 100, "garch")
+yd = yd$garch_mat
 
 # decompose the first sparse and non-negative functional principal component.
-basis.fsnn(yd_arch,M=1)
+basis.fsnn(yd, M=1)
 
 }
 \references{

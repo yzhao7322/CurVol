@@ -2,7 +2,6 @@
 #'
 #' @description fun_hetero applies a test of the null hypothesis that the objective functional curve data is not conditionally heteroscedastic, small p-values suggest that the curves exhibit conditional heteroscedasticity.
 #'
-#'
 #' @param yd A (grid_point) x (number of observations) matrix drawn from N intra-day return curves.
 #' @param K The lag autocorrelation coefficients served for the conditional heteroscedasticity test. If it is missing, a default value "K=20" is used.
 #' @param stat_Method A string to indicate which test will be implemented: "norm" - \eqn{V_{N,K}}; "functional" - \eqn{M_{N,K}}. Or if it is missing, the "functional"-type method is used.
@@ -29,10 +28,10 @@
 #'
 #' @examples
 #' # generate discrete evaluations of the iid curves under the null hypothesis.
-#' yd = dgp.fiid(50,100)
+#' yd = dgp.fiid(50, 100)
 #'
 #' # test the conditional heteroscedasticity.
-#' fun_hetero(yd, K=5,"functional")
+#' fun_hetero(yd, K=5, "functional")
 #'
 #' @references
 #' Rice, G., Wirjanto, T., Zhao, Y. (2020). Tests for conditional heteroscedasticity of functional data. Journal of Time Series Analysis.
@@ -41,7 +40,6 @@ fun_hetero <- function (yd, K=NULL, stat_Method, pplot=NULL){
   if(is.null(K) == TRUE) {
     K=20
   }
-
   ## functions to compute the norm statistics
   normx2 <- function(x){ # compute the L2 norm
     N=ncol(x)
@@ -209,7 +207,6 @@ fun_hetero <- function (yd, K=NULL, stat_Method, pplot=NULL){
 
 
 
-
 #' Goodness-of-fit Test for Functional ARCH/GARCH Model
 #'
 #' @description gof.fgarch function approximates the P-value of the \eqn{M_{N,K}} statistics accounting for the effect of functional GARCH parameter estimation.
@@ -235,13 +232,13 @@ fun_hetero <- function (yd, K=NULL, stat_Method, pplot=NULL){
 #' @examples
 #' # generate discrete evaluations of the FARCH process.
 #' grid_point=50; N=200
-#' yd = dgp.fgarch(grid_point, N)
+#' yd = dgp.fgarch(grid_point, N, "garch")
 #' yd = yd$garch_mat
-#' ba = basis.tfpca(yd,M=2)
+#' ba = basis.tfpca(yd, M=2)
 #' basis_est = ba$basis
 #'
 #' # test the adequacy of the FGARCH(1,1) model.
-#' gof.fgarch(yd,basis_est[,1],"arch",K=5)
+#' gof.fgarch(yd, basis_est[,1], "arch", K=5)
 #'
 #' @references
 #' Aue, A., Horvath, L., F. Pellatt, D. (2017). Functional generalized autoregressive conditional heteroskedasticity. Journal of Time Series Analysis, 38(1), 3-21.\cr

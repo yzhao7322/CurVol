@@ -18,12 +18,12 @@
 #' Overnight cumulative intra-day log returns: \eqn{x_i(t)=\log P_i(t) - \log P_{i-1}(1)}.
 #'
 #' @examples
-#' # generate intra-day price curve data for the FARCH process.
-#' yd = dgp.farch(50,100)
-#' yd_arch = yd$arch_mat
+#' # generate intra-day price curve data for the FGARCH process.
+#' yd = dgp.fgarch(50, 100, "garch")
+#' yd = yd$garch_mat
 #'
 #' # calculate discrete data drawn from N intra-day return curves.
-#' fcurve = intra.return(yd_arch)
+#' fcurve = intra.return(yd)
 #' idr = fcurve$idr
 #' cidr = fcurve$cidr
 #' ocidr = fcurve$ocidr
@@ -78,7 +78,7 @@ intra.return <- function(yd){
 #' @seealso \code{\link{basis.tfpca}} \code{\link{basis.fsnn}} \code{\link{basis.tpf}}
 #' @examples
 #' #generate discrete evaluations of exponential and Bernstein basis functions with order one.
-#' ppb = basis.pp(50,1)
+#' ppb = basis.pp(50, 1)
 #' exp = ppb$exp
 #' bern = ppb$bern
 basis.pp <- function(grid_point,M){
@@ -110,12 +110,12 @@ basis.pp <- function(grid_point,M){
 #'
 #' @seealso \code{\link{basis.pp}} \code{\link{basis.fsnn}} \code{\link{basis.tpf}}
 #' @examples
-#' # generate discrete evaluations of the FARCH process.
-#' yd = dgp.farch(50,100)
-#' yd_arch = yd$arch_mat
+#' # generate discrete evaluations of the FGARCH process.
+#' yd = dgp.fgarch(50, 100, "garch")
+#' yd = yd$garch_mat
 #'
 #' # decompose the first truncated non-negative functional principal component.
-#' dt = basis.tfpca(yd_arch,M=1)
+#' dt = basis.tfpca(yd, M=1)
 #' tbasis = dt$basis
 #' tve = dt$tve
 #'
@@ -163,11 +163,11 @@ basis.tfpca <- function(yd,M){
 #' @seealso \code{\link{basis.pp}} \code{\link{basis.tfpca}} \code{\link{basis.tpf}}
 #' @examples
 #' # generate discrete evaluations of the FARCH process.
-#' yd = dgp.farch(50,100)
-#' yd_arch = yd$arch_mat
+#' yd = dgp.fgarch(50, 100, "garch")
+#' yd = yd$garch_mat
 #'
 #' # decompose the first sparse and non-negative functional principal component.
-#' basis.fsnn(yd_arch,M=1)
+#' basis.fsnn(yd, M=1)
 #'
 #' @references
 #' Rice, G., Wirjanto, T., Zhao, Y. (2020). Functional GARCH-X model with an application to forecasting crude oil return curves. Working Paper.
@@ -316,12 +316,12 @@ basis.fsnn <- function(yd, M){
 #'
 #' @seealso \code{\link{basis.pp}} \code{\link{basis.tfpca}} \code{\link{basis.fsnn}}
 #' @examples
-#' # generate discrete evaluations of the FARCH process.
-#' yd = dgp.farch(50,100)
-#' yd_arch = yd$arch_mat
+#' # generate discrete evaluations of the FGARCH process.
+#' yd = dgp.fgarch(50, 100, "garch")
+#' yd = yd$garch_mat
 #'
 #' # decompose the first two non-negative predictive factors.
-#' basis.tpf(yd_arch,M=2,a=0.75,h=1)
+#' basis.tpf(yd, M=2, a=0.75, h=1)
 #'
 #' @references
 #' Rice, G., Wirjanto, T., Zhao, Y. (2020). Functional GARCH-X model with an application to forecasting crude oil return curves. Working Paper.

@@ -26,12 +26,12 @@ tve: the total variations explained by each non-negative predictive factor.
 basis.tpf function extracts non-negative predictive factors from the squared process of conditionally heteroscedastic curves, presumably, so that they may be modelled with a Functional GARCH model subsequently.
 }
 \examples{
-# generate discrete evaluations of the FARCH process.
-yd = dgp.farch(50,100)
-yd_arch = yd$arch_mat
+# generate discrete evaluations of the FGARCH process.
+yd = dgp.fgarch(50, 100, "garch")
+yd = yd$garch_mat
 
 # decompose the first two non-negative predictive factors.
-basis.tpf(yd_arch,M=2,a=0.75,h=1)
+basis.tpf(yd, M=2, a=0.75, h=1)
 
 }
 \references{

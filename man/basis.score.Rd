@@ -19,13 +19,13 @@ basis.score function returns functional scores by projecting the squared process
 }
 \examples{
 # generate discrete evaluations of iid curve data.
-edata = dgp.fiid(50,100)
+edata = dgp.fiid(50, 100)
 # smooth discrete data into functional curves.
-fd = fda::Data2fd(argvals=seq(0,1,len = 50),y=edata,fda::create.bspline.basis(nbasis = 32))
-bern = basis.pp(50,2)$bern
+fd = fda::Data2fd(argvals=seq(0, 1, len = 50),y=edata,fda::create.bspline.basis(nbasis = 32))
+bern = basis.pp(50, 2)$bern
 
 # get functional scores by projecting the squared process onto Bernstein basis.
-y_inp = basis.score(fd,bern)
+y_inp = basis.score(fd, bern)
 }
 \seealso{
 \code{\link{est.fArch}} \code{\link{est.fGarch}} \code{\link{est.fGarchx}} \code{\link{diagnostic.fGarch}}

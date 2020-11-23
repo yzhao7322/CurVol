@@ -27,21 +27,22 @@
 #' @examples
 #' # generate discrete evaluations of the FGARCH(1,1) process.
 #' grid_point = 50; N = 200
-#' yd = dgp.fgarch(grid_point, N)
+#' yd = dgp.fgarch(grid_point, N, "garch")
 #' yd = yd$garch_mat
 #' # extract data-driven basis functions through the truncated FPCA method.
-#' ba = basis.tfpca(yd,M=2)
+#' ba = basis.tfpca(yd, M=2)
 #' basis_est = ba$basis
 #' # fit the curve data and the conditional volatility by using an FGARCH(1,1) model with M=1.
-#' fd = fda::Data2fd(argvals=seq(0,1,len = 50),y=yd,fda::create.bspline.basis(nbasis = 32))
-#' y_inp = basis.score(fd,as.matrix(basis_est[,1]))
+#' fd = fda::Data2fd(argvals=seq(0,1,len=50),y=yd,fda::create.bspline.basis(nbasis=32))
+#' y_inp = basis.score(fd, basis_est[,1])
 #' garch11_est = est.fGarch(y_inp)
-#' diag_garch = diagnostic.fGarch(garch11_est,basis_est[,1],yd)
+#' diag_garch = diagnostic.fGarch(garch11_est, basis_est[,1], yd)
+#' # get the in-sample fitting of conditional variance.
 #' sigma_fit = diag_garch$sigma2[,1:N]
 #' error_fit = diag_garch$eps
 #'
 #' # get in-sample intra-day VaR curve by assuming a point-wisely Gaussian distributed error term.
-#' exr=var.forecast(yd,sigma_fit,error_fit,quantile_v=0.01,Method="normal")
+#' exr = var.forecast(yd, sigma_fit, error_fit, quantile_v=0.01, Method="normal")
 #' exr$intraday_VaR
 #'
 #' @references
@@ -152,24 +153,25 @@ var.forecast <- function(yd,sigma_pred,error_fit,quantile_v,Method){
 #' @examples
 #' # generate discrete evaluations of the FGARCH(1,1) process.
 #' grid_point = 50; N = 200
-#' yd = dgp.fgarch(grid_point, N)
+#' yd = dgp.fgarch(grid_point, N, "garch")
 #' yd = yd$garch_mat
 #' # extract data-driven basis functions through the truncated FPCA method.
-#' ba = basis.tfpca(yd,M=2)
+#' ba = basis.tfpca(yd, M=2)
 #' basis_est = ba$basis
 #' # fit the curve data and the conditional volatility by using an FGARCH(1,1) model with M=1.
-#' fd = fda::Data2fd(argvals=seq(0,1,len = grid_point),y=yd,fda::create.bspline.basis(nbasis = 32))
-#' y_inp = basis.score(fd,as.matrix(basis_est[,1]))
+#' fd = fda::Data2fd(argvals=seq(0,1,len=grid_point),y=yd,fda::create.bspline.basis(nbasis=32))
+#' y_inp = basis.score(fd,basis_est[,1])
 #' garch11_est = est.fGarch(y_inp)
-#' diag_garch = diagnostic.fGarch(garch11_est,basis_est[,1],yd)
+#' diag_garch = diagnostic.fGarch(garch11_est, basis_est[,1], yd)
+#' # get the in-sample fitting of conditional variance.
 #' sigma_fit = diag_garch$sigma2[,1:N]
 #' error_fit = diag_garch$eps
 #' # get in-sample intra-day VaR curve by assuming a point-wisely Gaussian distributed error term.
-#' var_obj = var.forecast(yd,sigma_fit,error_fit,quantile_v=0.01,Method="normal")
+#' var_obj = var.forecast(yd, sigma_fit, error_fit, quantile_v=0.01, Method="normal")
 #' intra_var = var_obj$intraday_VaR
 #'
 #' # compute the violation curve.
-#' var.vio(yd,intra_var)
+#' var.vio(yd, intra_var)
 #'
 #' @references
 #' Rice, G., Wirjanto, T., Zhao, Y. (2020). Forecasting Value at Risk via intra-Day return curves. International Journal of Forecasting.
@@ -206,26 +208,27 @@ var.vio <- function(yd,var_curve){
 #' @examples
 #' # generate discrete evaluations of the FGARCH(1,1) process.
 #' grid_point = 50; N = 200
-#' yd = dgp.fgarch(grid_point, N)
+#' yd = dgp.fgarch(grid_point, N, "garch")
 #' yd = yd$garch_mat
 #' # extract data-driven basis functions through the truncated FPCA method.
-#' ba = basis.tfpca(yd,M=2)
+#' ba = basis.tfpca(yd, M=2)
 #' basis_est = ba$basis
 #' # fit the curve data and the conditional volatility by using a FGARCH(1,1) model with M=1.
-#' fd = fda::Data2fd(argvals=seq(0,1,len = grid_point),y=yd,fda::create.bspline.basis(nbasis = 32))
-#' y_inp = basis.score(fd,as.matrix(basis_est[,1]))
+#' fd = fda::Data2fd(argvals=seq(0,1,len=grid_point),y=yd,fda::create.bspline.basis(nbasis=32))
+#' y_inp = basis.score(fd, basis_est[,1])
 #' garch11_est = est.fGarch(y_inp)
-#' diag_garch = diagnostic.fGarch(garch11_est,basis_est[,1],yd)
+#' diag_garch = diagnostic.fGarch(garch11_est, basis_est[,1], yd)
+#' # get the in-sample fitting of conditional variance.
 #' sigma_fit = diag_garch$sigma2[,1:N]
 #' error_fit = diag_garch$eps
 #' # get in-sample intra-day VaR curve by assuming a point-wisely Gaussian distributed error term.
-#' var_obj = var.forecast(yd,sigma_fit,error_fit,quantile_v=0.01,Method="normal")
+#' var_obj = var.forecast(yd, sigma_fit, error_fit, quantile_v=0.01, Method="normal")
 #' intra_var = var_obj$intraday_VaR
 #' # compute the violation curves.
-#' intra_vio = var.vio(yd,intra_var)
+#' intra_vio = var.vio(yd, intra_var)
 #'
 #' # backtesting the Unbiasedness Hypothesis for the violation curve.
-#' backtest.unbias(vio=intra_vio,tau=0.01)
+#' backtest.unbias(vio=intra_vio, tau=0.01)
 #'
 #' @references
 #' Christoffersen, P. (2010). Backtesting. Encyclopedia of Quantitative Finance, Wiley. \cr
@@ -312,26 +315,27 @@ backtest.unbias <- function(vio,tau){
 #' @examples
 #' # generate discrete evaluations of the FGARCH(1,1) process.
 #' grid_point = 50; N = 200
-#' yd = dgp.fgarch(grid_point, N)
+#' yd = dgp.fgarch(grid_point, N, "garch")
 #' yd = yd$garch_mat
 #' # extract data-driven basis functions through the truncated FPCA method.
-#' ba = basis.tfpca(yd,M=2)
+#' ba = basis.tfpca(yd, M=2)
 #' basis_est = ba$basis
 #' # fit the curve data and the conditional volatility by using an FGARCH(1,1) model with M=1.
-#' fd = fda::Data2fd(argvals=seq(0,1,len = 50),y=yd,fda::create.bspline.basis(nbasis = 32))
-#' y_inp = basis.score(fd,as.matrix(basis_est[,1]))
+#' fd = fda::Data2fd(argvals=seq(0,1,len=50),y=yd,fda::create.bspline.basis(nbasis=32))
+#' y_inp = basis.score(fd, basis_est[,1])
 #' garch11_est = est.fGarch(y_inp)
-#' diag_garch = diagnostic.fGarch(garch11_est,basis_est[,1],yd)
+#' diag_garch = diagnostic.fGarch(garch11_est, basis_est[,1], yd)
+#' # get the in-sample fitting of conditional variance.
 #' sigma_fit = diag_garch$sigma2[,1:N]
 #' error_fit = diag_garch$eps
 #' # get in-sample intra-day VaR curve by assuming a point-wisely Gaussian distributed error term.
-#' var_obj = var.forecast(yd,sigma_fit,error_fit,quantile_v=0.01,Method="normal")
+#' var_obj = var.forecast(yd, sigma_fit, error_fit, quantile_v=0.01, Method="normal")
 #' intra_var = var_obj$intraday_VaR
 #' # obtain the violation curves.
-#' intra_vio = var.vio(yd,intra_var)
+#' intra_vio = var.vio(yd, intra_var)
 #'
 #' # backtesting the Independence Hypothesis for the violation curve.
-#' backtest.indep(vio=intra_vio,K=5)
+#' backtest.indep(vio=intra_vio, K=5)
 #'
 #' @references
 #' Christoffersen, P. (2010). Backtesting. Encyclopedia of Quantitative Finance, Wiley. \cr

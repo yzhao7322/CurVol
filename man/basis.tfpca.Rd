@@ -22,12 +22,12 @@ tve: the total variations explained by each truncated functional principal compo
 basis.tfpca function extracts truncated non-negative functional principal components from the squared process of conditionally heteroscedastic curves, presumably, so that they may be modelled with a Functional GARCH model subsequently.
 }
 \examples{
-# generate discrete evaluations of the FARCH process.
-yd = dgp.farch(50,100)
-yd_arch = yd$arch_mat
+# generate discrete evaluations of the FGARCH process.
+yd = dgp.fgarch(50, 100, "garch")
+yd = yd$garch_mat
 
 # decompose the first truncated non-negative functional principal component.
-dt = basis.tfpca(yd_arch,M=1)
+dt = basis.tfpca(yd, M=1)
 tbasis = dt$basis
 tve = dt$tve
 

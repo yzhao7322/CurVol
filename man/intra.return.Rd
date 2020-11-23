@@ -28,12 +28,12 @@ Cumulative intra-day log returns: \eqn{X_i(t)=\log P_i(t) - \log P_i(0)};
 Overnight cumulative intra-day log returns: \eqn{x_i(t)=\log P_i(t) - \log P_{i-1}(1)}.
 }
 \examples{
-# generate intra-day price curve data for the FARCH process.
-yd = dgp.farch(50,100)
-yd_arch = yd$arch_mat
+# generate intra-day price curve data for the FGARCH process.
+yd = dgp.fgarch(50, 100, "garch")
+yd = yd$garch_mat
 
 # calculate discrete data drawn from N intra-day return curves.
-fcurve = intra.return(yd_arch)
+fcurve = intra.return(yd)
 idr = fcurve$idr
 cidr = fcurve$cidr
 ocidr = fcurve$ocidr

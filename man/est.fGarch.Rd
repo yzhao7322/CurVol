@@ -27,15 +27,15 @@ This function allows you to fit a funcGARCH(p,q) using QMLE, given the matrix of
 }
 \examples{
 # generate discrete evaluations of the FARCH process.
-yd = dgp.farch(grid_point=50, N=200)
-yd = yd$arch_mat
-fd = fda::Data2fd(argvals=seq(0,1,len = 50),y=yd,fda::create.bspline.basis(nbasis = 32))
+yd = dgp.fgarch(grid_point=50, N=200, "arch")
+yd = yd$garch_mat
+fd = fda::Data2fd(argvals=seq(0,1,len=50),y=yd,fda::create.bspline.basis(nbasis=32))
 # extract data-driven basis functions through the truncated FPCA method.
-ba = basis.tfpca(yd,M=2)
+ba = basis.tfpca(yd, M=2)
 basis_est = ba$basis
 
 # fit a FGARCH(1,1) model with the projection M=1.
-y_inp = basis.score(fd,as.matrix(basis_est[,1]))
+y_inp = basis.score(fd, basis_est[,1])
 garch11_est = est.fGarch(y_inp)
 
 }

@@ -13,14 +13,15 @@
 #' @seealso \code{\link{est.fArch}} \code{\link{est.fGarch}} \code{\link{est.fGarchx}} \code{\link{diagnostic.fGarch}}
 #' @examples
 #' # generate discrete evaluations of iid curve data.
-#' edata = dgp.fiid(50,100)
+#' edata = dgp.fiid(50, 100)
 #' # smooth discrete data into functional curves.
-#' fd = fda::Data2fd(argvals=seq(0,1,len = 50),y=edata,fda::create.bspline.basis(nbasis = 32))
-#' bern = basis.pp(50,2)$bern
+#' fd = fda::Data2fd(argvals=seq(0, 1, len = 50),y=edata,fda::create.bspline.basis(nbasis = 32))
+#' bern = basis.pp(50, 2)$bern
 #'
 #' # get functional scores by projecting the squared process onto Bernstein basis.
-#' y_inp = basis.score(fd,bern)
+#' y_inp = basis.score(fd, bern)
 basis.score=function(fdata,basis){
+  basis=as.matrix(basis)
   N=dim(fdata$coefs)[2]
   grid_point=dim(basis)[1]
   M=dim(basis)[2]
@@ -65,15 +66,15 @@ basis.score=function(fdata,basis){
 #'
 #' @examples
 #' # generate discrete evaluations of the FARCH process.
-#' yd = dgp.farch(grid_point=50, N=200)
-#' yd = yd$arch_mat
-#' fd = fda::Data2fd(argvals=seq(0,1,len = 50),y=yd,fda::create.bspline.basis(nbasis = 32))
+#' yd = dgp.fgarch(grid_point=50, N=200, "arch")
+#' yd = yd$garch_mat
+#' fd = fda::Data2fd(argvals=seq(0,1,len=50),y=yd,fda::create.bspline.basis(nbasis=32))
 #' # extract data-driven basis functions through the truncated FPCA method.
-#' ba = basis.tfpca(yd,M=2)
+#' ba = basis.tfpca(yd, M=2)
 #' basis_est = ba$basis
 #'
 #' # fit a FARCH(1) model with the projection M=1.
-#' y_inp = basis.score(fd,as.matrix(basis_est[,1]))
+#' y_inp = basis.score(fd, basis_est[,1])
 #' arch1_est = est.fArch(y_inp)
 #'
 #' @references
@@ -237,15 +238,15 @@ est.fArch=function(y_vec,q=1){
 #'
 #' @examples
 #' # generate discrete evaluations of the FARCH process.
-#' yd = dgp.farch(grid_point=50, N=200)
-#' yd = yd$arch_mat
-#' fd = fda::Data2fd(argvals=seq(0,1,len = 50),y=yd,fda::create.bspline.basis(nbasis = 32))
+#' yd = dgp.fgarch(grid_point=50, N=200, "arch")
+#' yd = yd$garch_mat
+#' fd = fda::Data2fd(argvals=seq(0,1,len=50),y=yd,fda::create.bspline.basis(nbasis=32))
 #' # extract data-driven basis functions through the truncated FPCA method.
-#' ba = basis.tfpca(yd,M=2)
+#' ba = basis.tfpca(yd, M=2)
 #' basis_est = ba$basis
 #'
 #' # fit a FGARCH(1,1) model with the projection M=1.
-#' y_inp = basis.score(fd,as.matrix(basis_est[,1]))
+#' y_inp = basis.score(fd, basis_est[,1])
 #' garch11_est = est.fGarch(y_inp)
 #'
 est.fGarch=function(y_vec,p=1,q=1){
@@ -424,19 +425,19 @@ est.fGarch=function(y_vec,p=1,q=1){
 #'
 #' @examples
 #' # generate discrete evaluations of the FARCH and FGARCH processes.
-#' yd = dgp.farch(grid_point=50, N=200)
-#' yd = yd$arch_mat
-#' xd = dgp.fgarch(grid_point=50, N=200)
+#' yd = dgp.fgarch(grid_point=50, N=200, "arch")
+#' yd = yd$garch_mat
+#' xd = dgp.fgarch(grid_point=50, N=200, "garch")
 #' xd = xd$garch_mat
-#' fdy = fda::Data2fd(argvals=seq(0,1,len = 50),y=yd,fda::create.bspline.basis(nbasis = 32))
-#' fdx = fda::Data2fd(argvals=seq(0,1,len = 50),y=xd,fda::create.bspline.basis(nbasis = 32))
+#' fdy = fda::Data2fd(argvals=seq(0,1,len=50),y=yd,fda::create.bspline.basis(nbasis=32))
+#' fdx = fda::Data2fd(argvals=seq(0,1,len=50),y=xd,fda::create.bspline.basis(nbasis=32))
 #' # extract data-driven basis functions through the truncated FPCA method.
-#' ba = basis.tfpca(yd,M=2)
+#' ba = basis.tfpca(yd, M=2)
 #' basis_est = ba$basis
 #'
 #' # fit a FGARCH-X model with the projection M=1.
-#' y_inp = basis.score(fdy,as.matrix(basis_est[,1]))
-#' x_inp = basis.score(fdx,as.matrix(basis_est[,1]))
+#' y_inp = basis.score(fdy, basis_est[,1])
+#' x_inp = basis.score(fdx, basis_est[,1])
 #' garchx_est = est.fGarchx(y_inp, x_inp)
 #'
 #' @references
@@ -622,18 +623,18 @@ est.fGarchx=function(y_vec,x_vec){
 #'
 #' @examples
 #' # generate discrete evaluations of the FARCH process.
-#' yd = dgp.fgarch(grid_point=50, N=200)
+#' yd = dgp.fgarch(grid_point=50, N=200, "garch")
 #' yd = yd$garch_mat
-#' fdy = fda::Data2fd(argvals=seq(0,1,len = 50),y=yd,fda::create.bspline.basis(nbasis = 32))
+#' fdy = fda::Data2fd(argvals=seq(0,1,len=50),y=yd,fda::create.bspline.basis(nbasis=32))
 #' # extract data-driven basis functions through the truncated FPCA method.
-#' ba = basis.tfpca(yd,M=2)
+#' ba = basis.tfpca(yd, M=2)
 #' basis_est = ba$basis
-#' # fit the curve data with an FGARCH-X model.
-#' y_inp = basis.score(fdy,as.matrix(basis_est))
+#' # fit the curve data with an FARCH(1) model.
+#' y_inp = basis.score(fdy, basis_est)
 #' arch_est = est.fArch(y_inp)
 #'
 #' # get parameters for diagnostic checking.
-#' diag_arch  = diagnostic.fGarch(arch_est,basis_est,yd)
+#' diag_arch  = diagnostic.fGarch(arch_est, basis_est, yd)
 #'
 #' @references
 #' Rice, G., Wirjanto, T., Zhao, Y. (2020). Tests for conditional heteroscedasticity of functional data. Journal of Time Series Analysis.

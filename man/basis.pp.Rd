@@ -23,7 +23,7 @@ basis.pp function returns positive vectors drawn from exponential and Bernstein 
 }
 \examples{
 #generate discrete evaluations of exponential and Bernstein basis functions with order one.
-ppb = basis.pp(50,1)
+ppb = basis.pp(50, 1)
 exp = ppb$exp
 bern = ppb$bern
 }

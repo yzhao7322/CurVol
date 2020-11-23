@@ -31,13 +31,13 @@ The test statistic used is as the same as the \eqn{M_{N,K}} statistic in \code{\
 \examples{
 # generate discrete evaluations of the FARCH process.
 grid_point=50; N=200
-yd = dgp.fgarch(grid_point, N)
+yd = dgp.fgarch(grid_point, N, "garch")
 yd = yd$garch_mat
-ba = basis.tfpca(yd,M=2)
+ba = basis.tfpca(yd, M=2)
 basis_est = ba$basis
 
 # test the adequacy of the FGARCH(1,1) model.
-gof.fgarch(yd,basis_est[,1],"arch",K=5)
+gof.fgarch(yd, basis_est[,1], "arch", K=5)
 
 }
 \references{

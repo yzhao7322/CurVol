@@ -7,10 +7,10 @@
 
 <!-- badges: end -->
 
-The goal of CurVol is to document useful functions to analyse the
-volatility of functional curve data. Methods and tools in this package
-replicate the hypothesis testing, model estimation, and backtesting
-Value-at-risk in a series of papers including:
+The goal of CurVol is to document useful functions to analyze the
+volatility of functional time series data. Methods and tools in this
+package replicate hypothesis testing, model estimation, and backtesting
+in a series of papers:
 
 Hormann, S., Horvath, L., Reeder, R. (2013). A functional version of the
 ARCH model. Econometric Theory, 29(2), 267-288.
@@ -24,7 +24,7 @@ Functional GARCH models: The quasi-likelihood approach and its
 applications. Journal of Econometrics, 209(2), 353-375.
 
 Rice, Wirjanto, and Zhao (2020) Tests for conditional heteroscedasticity
-of functional data, Journal of Time Series Analysis.
+of functional data, Journal of Time Series Analysis. 41(6), 733-758.
 
 Rice, Wirjanto, and Zhao (2020) Forecasting Value at Risk via intra-day
 return curves, International Journal of Forecasting.
@@ -53,23 +53,21 @@ install.packages("CurVol")
     components.
 7.  basis.score - functional scores by projecting the squared process
     onto given basis functions.
-8.  dgp.farch - generate functional data following the functional
-    ARCH(1) process.
-9.  dgp.fgarch - generate functional data following the functional
-    GARCH(1,1) process.
-10. dgp.fiid - generate iid functional data following Ornstein–Uhlenbeck
+8.  dgp.fgarch - generate functional data following the functional
+    ARCH(1) or GARCH(1,1) process.
+9.  dgp.fiid - generate iid functional data following Ornstein–Uhlenbeck
     process.
-11. diagnostic.fGarch - estimation parameters as the inputs for
+10. diagnostic.fGarch - estimation parameters as the inputs for
     diagnostic purposes.
-12. est.fArch - estimate functional ARCH (q) model.
-13. est.fGarch - estimate Functional GARCH (p,q) model.
-14. est.fGarchx - estimate Functional GARCH-X model.
-15. fun\_hetero - test conditional heteroscedasticity for functional
+11. est.fArch - estimate functional ARCH (q) model.
+12. est.fGarch - estimate Functional GARCH (p,q) model.
+13. est.fGarchx - estimate Functional GARCH-X model.
+14. fun\_hetero - test conditional heteroscedasticity for functional
     data.
-16. gof.fgarch - goodness-of-fit test for functional ARCH/GARCH model.
-17. intra.return - intra-day return curves: intra-day return (IDR),
+15. gof.fgarch - goodness-of-fit test for functional ARCH/GARCH model.
+16. intra.return - intra-day return curves: intra-day return (IDR),
     cumulative intra-day return (CIDR), overnight cumulative intra-day
     return (OCIDR).
-18. sample\_data - a sample data containing S\&P 500 intra-day price.
-19. var.forecast - forecast daily/intra-day Value-at-Risk.
-20. var.vio - calculate the violation process based on Value-at-Risk.
+17. sample\_data - a sample data containing S\&P 500 intra-day price.
+18. var.forecast - forecast daily/intra-day Value-at-Risk.
+19. var.vio - calculate the violation process based on Value-at-Risk.

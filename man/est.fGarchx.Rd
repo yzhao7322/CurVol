@@ -33,19 +33,19 @@ where \eqn{x_i(t)} is an exogenous variable.
 }
 \examples{
 # generate discrete evaluations of the FARCH and FGARCH processes.
-yd = dgp.farch(grid_point=50, N=200)
-yd = yd$arch_mat
-xd = dgp.fgarch(grid_point=50, N=200)
+yd = dgp.fgarch(grid_point=50, N=200, "arch")
+yd = yd$garch_mat
+xd = dgp.fgarch(grid_point=50, N=200, "garch")
 xd = xd$garch_mat
-fdy = fda::Data2fd(argvals=seq(0,1,len = 50),y=yd,fda::create.bspline.basis(nbasis = 32))
-fdx = fda::Data2fd(argvals=seq(0,1,len = 50),y=xd,fda::create.bspline.basis(nbasis = 32))
+fdy = fda::Data2fd(argvals=seq(0,1,len=50),y=yd,fda::create.bspline.basis(nbasis=32))
+fdx = fda::Data2fd(argvals=seq(0,1,len=50),y=xd,fda::create.bspline.basis(nbasis=32))
 # extract data-driven basis functions through the truncated FPCA method.
-ba = basis.tfpca(yd,M=2)
+ba = basis.tfpca(yd, M=2)
 basis_est = ba$basis
 
 # fit a FGARCH-X model with the projection M=1.
-y_inp = basis.score(fdy,as.matrix(basis_est[,1]))
-x_inp = basis.score(fdx,as.matrix(basis_est[,1]))
+y_inp = basis.score(fdy, basis_est[,1])
+x_inp = basis.score(fdx, basis_est[,1])
 garchx_est = est.fGarchx(y_inp, x_inp)
 
 }

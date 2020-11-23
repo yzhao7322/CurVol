@@ -34,10 +34,10 @@ the fully functional statistic \eqn{M_{N,K}=N\sum_{h=1}^K||\hat{\gamma}_h||^2}, 
 }
 \examples{
 # generate discrete evaluations of the iid curves under the null hypothesis.
-yd = dgp.fiid(50,100)
+yd = dgp.fiid(50, 100)
 
 # test the conditional heteroscedasticity.
-fun_hetero(yd, K=5,"functional")
+fun_hetero(yd, K=5, "functional")
 
 }
 \references{
