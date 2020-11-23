@@ -694,7 +694,7 @@ diagnostic.fGarch=function(params,basis,yd,p=0,q=1,xd=NULL){
 
   if(is.null(xd) == FALSE){
     gamma_M=matrix(0,NROW(times),NROW(times))
-    G_mat=as.matrix(Gs[[h]])
+    G_mat=as.matrix(Gs[[1]])
     temp_gamma_m=0
     for(t in 1:M){
       for(s in 1:M){
