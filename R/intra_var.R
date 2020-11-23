@@ -188,22 +188,30 @@ var.vio <- function(yd,var_curve){
 
 
 
-#' Backtest Intra-day VaR (Unbiasedness Hypothesis)
+#' Backtest Intra-day VaR forecasts
 #'
-#' @description backtest.unbias function backtests the unbiasedness hypothesis for the intra-day VaR curve forecasts.
+#' @description backtest.var function backtests the unbiasedness and the independence hypotheses for the intra-day VaR curve forecasts.
 #'
 #' @param vio A (grid_point) x (number of observations) matrix drawn from the violation process curves.
 #' @param tau The nominal/true quantile of the VaR curves.
+#' @param K The maximal lagged autocorrelation considered for the independence test. If it is missing, a default value "K=20" is used.
 #'
-#' @return The p-value of the test statistics.
+#' @return
+#' @return List of generated processes:
+#' @return unbias: the p-value of the unbiasedness test;
+#' @return independent: the p-value of the independence test.
 #'
 #' @export
 #'
 #' @details
-#' Given the violation process \eqn{Z_i^\tau(t)} at the quantile \eqn{\tau} obtained by using \code{\link{var.vio}}, the function computes an approximate p-value of a test of the null hypothesis \eqn{H_0}: \eqn{E(Z_i^\tau(t)-\tau)=0}, for all \eqn{t \in[0,1]}, \eqn{1\leq i\leq N}. The test statistics,\cr
+#' Given the violation process \eqn{Z_i^\tau(t)} at the quantile \eqn{\tau} obtained by using \code{\link{var.vio}}, the function computes P-values of two hypothesis tests:
+#' (1) unbiasedness \eqn{H_0}: \eqn{E(Z_i^\tau(t)-\tau)=0}, for all \eqn{t \in[0,1]}, \eqn{1\leq i\leq N}. The test statistics,\cr
 #' \eqn{T_N=N|| \bar{Z}(t)-\tau||^2} is employed, where \eqn{||\cdot ||} is the \eqn{L^2} norm, and \eqn{\bar{Z}(t)=1/N\sum_{i=1}^N Z_i(t)}.
+#' (2) independence \eqn{H_0}: \eqn{Z_i^\tau(t)} is independent, a portmanteau test statistic in used (Kokoszka et al., 2017),\cr
+#' \eqn{V_{N,K}=N\sum_{h=1}^K||\hat{\gamma}_{h,Z}||^2}, \cr
+#' where \eqn{K} is a pre-set maximum lag length, and the autocovariance function \eqn{\hat{\gamma}_{h,Z}(t,s)=\frac{1}{N}\sum_{i=1}^{N-h}[Z_i(t)-\bar{Z}_i(t)][Z_{i+h}(s)-\bar{Z}(s)]}, for \eqn{||\cdot ||} is the \eqn{L^2} norm, and \eqn{\bar{Z}(t)=1/N\sum_{i=1}^N Z_i(t)}.
 #'
-#' @seealso \code{\link{var.forecast}} \code{\link{var.vio}} \code{\link{backtest.indep}}
+#' @seealso \code{\link{var.forecast}} \code{\link{var.vio}}
 #'
 #' @examples
 #' # generate discrete evaluations of the FGARCH(1,1) process.
@@ -228,14 +236,19 @@ var.vio <- function(yd,var_curve){
 #' intra_vio = var.vio(yd, intra_var)
 #'
 #' # backtesting the Unbiasedness Hypothesis for the violation curve.
-#' backtest.unbias(vio=intra_vio, tau=0.01)
+#' pvalues = backtest.var(vio=intra_vio, tau=0.01)
+#' pvalues$unbias
+#' pvalues$independent
 #'
 #' @references
 #' Christoffersen, P. (2010). Backtesting. Encyclopedia of Quantitative Finance, Wiley. \cr
+#' Kokoszka, P., Rice, G., Shang, H. L. (2017). Inference for the autocovariance of a functional time series under conditional heteroscedasticity. Journal of Multivariate Analysis, 162, 32-50. \cr
 #' Rice, G., Wirjanto, T., Zhao, Y. (2020). Forecasting Value at Risk via intra-Day return curves. International Journal of Forecasting.
 #'
-backtest.unbias <- function(vio,tau){
-
+backtest.var <- function(vio, tau, K=NULL){
+  #########################
+  ### unbiasedness test ###
+  #########################
   # the test T statistics
   H0_Tn<-function(z,tau){
     point_grid=nrow(z)
@@ -246,7 +259,6 @@ backtest.unbias <- function(vio,tau){
     Tn=n*int_approx(colMeans(z)-tau)^2
     return(Tn)
   }
-
   # get the critical values
   Tn_cv<-function(z,cv_N){
     N=ncol(z)
@@ -285,70 +297,19 @@ backtest.unbias <- function(vio,tau){
   Tn_stat=H0_Tn(vio,tau)
   limit=Tn_cv(vio,cv_N)
   emplim=limit[[2]]
+  unbias_p = 1-ecdf(emplim)(Tn_stat)
 
-  return(1-ecdf(emplim)(Tn_stat))
-}
-
-
-
-
-
-
-#' Backtest Intra-day VaR (Independence Hypothesis)
-#'
-#' @description backtest.indep function backtests the independence hypothesis for the intra-day VaR curves forecasts.
-#'
-#' @param vio A (grid_point) x (number of observations) matrix drawn from the violation process curves.
-#' @param K The maximal lagged autocorrelation considered for the independence test.
-#'
-#' @return The p-value of the test statistics.
-#' @export
-#'
-#' @details
-#' Given the violation process \eqn{Z_i^\tau(t)} at the quantile \eqn{\tau} obtained by using \code{\link{var.vio}}, for \eqn{t \in[0,1]} and \eqn{1\leq i\leq N}, the function provides an approximate p-value for a test of the null hypothesis of \eqn{H_0}: \eqn{Z_i^\tau(t)} being IID along \eqn{i}.\cr
-#' To test the null hypothesis, the function applies the portmanteau test statistic proposed by Kokoszka, Rice, Shang, (2017),\cr
-#' \eqn{V_{N,K}=N\sum_{h=1}^K||\hat{\gamma}_{h,Z}||^2}, \cr
-#' where \eqn{K} is a pre-set maximum lag length, and the autocovariance function \eqn{\hat{\gamma}_{h,Z}(t,s)=\frac{1}{N}\sum_{i=1}^{N-h}[Z_i(t)-\bar{Z}_i(t)][Z_{i+h}(s)-\bar{Z}(s)]}, for \eqn{||\cdot ||} is the \eqn{L^2} norm, and \eqn{\bar{Z}(t)=1/N\sum_{i=1}^N Z_i(t)}.
-#'
-#' @seealso \code{\link{var.forecast}} \code{\link{var.vio}} \code{\link{backtest.unbias}}
-#'
-#' @examples
-#' # generate discrete evaluations of the FGARCH(1,1) process.
-#' grid_point = 50; N = 200
-#' yd = dgp.fgarch(grid_point, N, "garch")
-#' yd = yd$garch_mat
-#' # extract data-driven basis functions through the truncated FPCA method.
-#' ba = basis.tfpca(yd, M=2)
-#' basis_est = ba$basis
-#' # fit the curve data and the conditional volatility by using an FGARCH(1,1) model with M=1.
-#' fd = fda::Data2fd(argvals=seq(0,1,len=50),y=yd,fda::create.bspline.basis(nbasis=32))
-#' y_inp = basis.score(fd, basis_est[,1])
-#' garch11_est = est.fGarch(y_inp)
-#' diag_garch = diagnostic.fGarch(garch11_est, basis_est[,1], yd)
-#' # get the in-sample fitting of conditional variance.
-#' sigma_fit = diag_garch$sigma2[,1:N]
-#' error_fit = diag_garch$eps
-#' # get in-sample intra-day VaR curve by assuming a point-wisely Gaussian distributed error term.
-#' var_obj = var.forecast(yd, sigma_fit, error_fit, quantile_v=0.01, Method="normal")
-#' intra_var = var_obj$intraday_VaR
-#' # obtain the violation curves.
-#' intra_vio = var.vio(yd, intra_var)
-#'
-#' # backtesting the Independence Hypothesis for the violation curve.
-#' backtest.indep(vio=intra_vio, K=5)
-#'
-#' @references
-#' Christoffersen, P. (2010). Backtesting. Encyclopedia of Quantitative Finance, Wiley. \cr
-#' Kokoszka, P., Rice, G., Shang, H. L. (2017). Inference for the autocovariance of a functional time series under conditional heteroscedasticity. Journal of Multivariate Analysis, 162, 32-50. \cr
-#' Rice, G., Wirjanto, T., Zhao, Y. (2020). Forecasting Value at Risk via intra-Day return curves. International Journal of Forecasting.
-#'
-backtest.indep <- function(vio, K){
+  #########################
+  ### independent test ###
+  #########################
+  if(is.null(K) == TRUE) {
+    K=20
+  }
 
   T_statistic <- function(fdata, lag_val){
     T = nrow(fdata)
     p = ncol(fdata)
     # calculate autocovariance function
-
     gamma_l <- function(fdata, lag){
       T = nrow(fdata)
       center_dat = t(scale(fdata, center = TRUE, scale = FALSE))
@@ -416,7 +377,6 @@ backtest.indep <- function(vio, K){
     return(sum1/p^2)
   }
 
-
   etapopNvarMC2 <- function(H, datmat, len1, len2){
     sum1 = 0
 
@@ -470,6 +430,7 @@ backtest.indep <- function(vio, K){
   res3 = etapopNvarMC2(K, vio, len1, len2)
   beta = res3/(2 * res2)
   nu = (2 * res2^2)/res3
+  independent_p = 1 - pchisq(res/beta, df = nu)
 
-  return(1 - pchisq(res/beta, df = nu))
+  return(list(unbias = unbias_p, independent = independent_p))
 }

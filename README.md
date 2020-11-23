@@ -43,31 +43,30 @@ install.packages("CurVol")
 
 ## R topics documented
 
-1.  backtest.inde - backtest the independence of intra-day VaR.
-2.  backtest.unbias - backtest the unbiasedness of intra-day VaR.
-3.  basis.fsnn - sparse and non-negative functional principal
+1.  backtest.var - backtest the intra-day VaR forecasts
+2.  basis.fsnn - sparse and non-negative functional principal
     components.
-4.  basis.pf - non-negative predictive factors.
-5.  basis.pp - exponential and Bernstein basis functions.
-6.  basis.tfpca - non-negative truncated functional principal
+3.  basis.pf - non-negative predictive factors.
+4.  basis.pp - exponential and Bernstein basis functions.
+5.  basis.tfpca - non-negative truncated functional principal
     components.
-7.  basis.score - functional scores by projecting the squared process
+6.  basis.score - functional scores by projecting the squared process
     onto given basis functions.
-8.  dgp.fgarch - generate functional data following the functional
+7.  dgp.fgarch - generate functional data following the functional
     ARCH(1) or GARCH(1,1) process.
-9.  dgp.fiid - generate iid functional data following Ornstein–Uhlenbeck
+8.  dgp.fiid - generate iid functional data following Ornstein–Uhlenbeck
     process.
-10. diagnostic.fGarch - estimation parameters as the inputs for
+9.  diagnostic.fGarch - estimation parameters as the inputs for
     diagnostic purposes.
-11. est.fArch - estimate functional ARCH (q) model.
-12. est.fGarch - estimate Functional GARCH (p,q) model.
-13. est.fGarchx - estimate Functional GARCH-X model.
-14. fun\_hetero - test conditional heteroscedasticity for functional
+10. est.fArch - estimate functional ARCH (q) model.
+11. est.fGarch - estimate Functional GARCH (p,q) model.
+12. est.fGarchx - estimate Functional GARCH-X model.
+13. fun\_hetero - test conditional heteroscedasticity for functional
     data.
-15. gof.fgarch - goodness-of-fit test for functional ARCH/GARCH model.
-16. intra.return - intra-day return curves: intra-day return (IDR),
+14. gof.fgarch - goodness-of-fit test for functional ARCH/GARCH model.
+15. intra.return - intra-day return curves: intra-day return (IDR),
     cumulative intra-day return (CIDR), overnight cumulative intra-day
     return (OCIDR).
-17. sample\_data - a sample data containing S\&P 500 intra-day price.
-18. var.forecast - forecast daily/intra-day Value-at-Risk.
-19. var.vio - calculate the violation process based on Value-at-Risk.
+16. sample\_data - a sample data containing S\&P 500 intra-day price.
+17. var.forecast - forecast daily/intra-day Value-at-Risk.
+18. var.vio - calculate the violation process based on Value-at-Risk.
