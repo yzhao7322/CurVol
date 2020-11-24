@@ -149,7 +149,7 @@ var.forecast <- function(yd,sigma_pred,error_fit,quantile_v,Method){
 
 #' Backtest Intra-day VaR forecasts
 #'
-#' @description backtest.var function backtests the unbiasedness and the independence hypotheses for the intra-day VaR curve forecasts.
+#' @description var.backtest function backtests the unbiasedness and the independence hypotheses for the intra-day VaR curve forecasts.
 #'
 #' @param vio A (grid_point) x (number of observations) matrix drawn from the violation process curves.
 #' @param tau The nominal/true quantile of the VaR curves.
@@ -198,7 +198,7 @@ var.forecast <- function(yd,sigma_pred,error_fit,quantile_v,Method){
 #' intra_vio = var_obj$vio_seq
 #'
 #' # backtesting the Unbiasedness Hypothesis for the violation curve.
-#' pvalues = backtest.var(vio=intra_vio, tau=0.01)
+#' pvalues = var.backtest(vio=intra_vio, tau=0.01)
 #' pvalues$unbias
 #' pvalues$independent
 #'
@@ -207,7 +207,7 @@ var.forecast <- function(yd,sigma_pred,error_fit,quantile_v,Method){
 #' Kokoszka, P., Rice, G., Shang, H. L. (2017). Inference for the autocovariance of a functional time series under conditional heteroscedasticity. Journal of Multivariate Analysis, 162, 32-50. \cr
 #' Rice, G., Wirjanto, T., Zhao, Y. (2020). Forecasting Value at Risk via intra-Day return curves. International Journal of Forecasting.
 #'
-backtest.var <- function(vio, tau, K=NULL){
+var.backtest <- function(vio, tau, K=NULL){
   #########################
   ### unbiasedness test ###
   #########################
