@@ -42,8 +42,7 @@ yd = yd$garch_mat
 basis_est = basis.est(yd, M=2, "tfpca")$basis
 # fit the curve data and the conditional volatility by using a FGARCH(1,1) model with M=1.
 fd = fda::Data2fd(argvals=seq(0,1,len=grid_point),y=yd,fda::create.bspline.basis(nbasis=32))
-y_inp = basis.score(fd, basis_est[,1])
-garch11_est = est.fGarch(y_inp)
+garch11_est = est.fGarch(fd, basis_est[,1])
 diag_garch = diagnostic.fGarch(garch11_est, basis_est[,1], yd)
 # get the in-sample fitting of conditional variance.
 sigma_fit = diag_garch$sigma2[,1:N]

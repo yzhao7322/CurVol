@@ -2,12 +2,14 @@
 % Please edit documentation in R/estimation.R
 \name{est.fGarch}
 \alias{est.fGarch}
-\title{Fit a Functional GARCH(p,q) model}
+\title{Estimate Functional GARCH Model}
 \usage{
-est.fGarch(y_vec, p = 1, q = 1)
+est.fGarch(fdata, basis, p = 1, q = 1)
 }
 \arguments{
-\item{y_vec}{(number of observations) x (number of basis functions) matrix of projections of squared observations.}
+\item{fdata}{The functional data object with N paths.}
+
+\item{basis}{The M-dimensional basis functions.}
 
 \item{p}{order of the depedence on past volatilities.}
 
@@ -23,19 +25,18 @@ As: A Matrices, for \eqn{\alpha} operators. See Aue et. al 2017/Cerovecki2019
 Bs: B Matrices, for \eqn{\beta} operators. See Aue et. al 2017/Cerovecki2019
 }
 \description{
-This function allows you to fit a funcGARCH(p,q) using QMLE, given the matrix of squared projections onto a finite number of basis functions.
+est.fGarch function estimates the Functional GARCH(p,q) model by using the Quasi-Maximum Likelihood Estimation method.
 }
 \examples{
 # generate discrete evaluations of the FARCH process.
-yd = dgp.fgarch(grid_point=50, N=200, "arch")
+yd = dgp.fgarch(grid_point=50, N=200, "garch")
 yd = yd$garch_mat
 fd = fda::Data2fd(argvals=seq(0,1,len=50),y=yd,fda::create.bspline.basis(nbasis=32))
 # extract data-driven basis functions through the truncated FPCA method.
 basis_est = basis.est(yd, M=2, "tfpca")$basis
 
-# fit a FGARCH(1,1) model with the projection M=1.
-y_inp = basis.score(fd, basis_est[,1])
-garch11_est = est.fGarch(y_inp)
+# estimate an FGARCH(1,1) model with basis when M=1.
+garch11_est = est.fGarch(fd, basis_est[,1])
 
 }
 \references{
@@ -43,5 +44,5 @@ Aue, A., Horvath, L., and F. Pellatt, D. (2017) Functional Generalized Autoregre
 Cerovecki, Clement & Francq, Christian & Hormann, Siegfried & Zakoian, Jean-Michel, 2019. "Functional GARCH models: The quasi-likelihood approach and its applications," Journal of Econometrics, Elsevier, vol. 209(2), pages 353-375.
 }
 \seealso{
-\code{\link{basis.score}} \code{\link{est.fArch}} \code{\link{est.fGarchx}} \code{\link{diagnostic.fGarch}}
+\code{\link{est.fArch}} \code{\link{est.fGarchx}} \code{\link{diagnostic.fGarch}}
 }

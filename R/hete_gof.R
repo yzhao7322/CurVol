@@ -227,7 +227,7 @@ fun_hetero <- function (yd, K=NULL, stat_Method, pplot=NULL){
 #' @details
 #' The test statistic used is as the same as the \eqn{M_{N,K}} statistic in \code{\link{fun_hetero}}. However, the asymptotic distribution is adjusted to account for the estimation effect, because the model residual depends on the joint asymptotics of the innovation process and the estimated parameters. We assume that the kernel parameters are consistently estimated by the Least Squares method proposed in Aue et al. (2017). Then, the asymptotic distribution of the statistic \eqn{M_{N,K}} is given in Theorem 3.1 in Rice et al. (2020).
 #'
-#' @seealso \code{\link{basis.est}} \code{\link{basis.score}} \code{\link{est.fGarch}} \code{\link{diagnostic.fGarch}}
+#' @seealso \code{\link{basis.est}} \code{\link{est.fGarch}} \code{\link{diagnostic.fGarch}}
 #'
 #' @examples
 #' # generate discrete evaluations of the FARCH process.

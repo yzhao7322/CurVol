@@ -4,10 +4,12 @@
 \alias{est.fArch}
 \title{Estimate Functional ARCH Model}
 \usage{
-est.fArch(y_vec, q = 1)
+est.fArch(fdata, basis, q = 1)
 }
 \arguments{
-\item{y_vec}{A (number of observations) x (number of basis functions) matrix of projections of squared observations.}
+\item{fdata}{The functional data object with N paths.}
+
+\item{basis}{The M-dimensional basis functions.}
 
 \item{q}{The order of the depedence on past squared observations. If it is missing, q=1.}
 }
@@ -34,9 +36,8 @@ fd = fda::Data2fd(argvals=seq(0,1,len=50),y=yd,fda::create.bspline.basis(nbasis=
 # extract data-driven basis functions through the truncated FPCA method.
 basis_est = basis.est(yd, M=2, "tfpca")$basis
 
-# fit a FARCH(1) model with the projection M=1.
-y_inp = basis.score(fd, basis_est[,1])
-arch1_est = est.fArch(y_inp)
+# estimate an FARCH(1) model with basis when M=1.
+arch1_est = est.fArch(fd, basis_est[,1])
 
 }
 \references{
@@ -45,5 +46,5 @@ Cerovecki, C., Francq, C., Hormann, S., Zakoian, J. M. (2019). Functional GARCH 
 Hormann, S., Horvath, L., Reeder, R. (2013). A functional version of the ARCH model. Econometric Theory, 29(2), 267-288.
 }
 \seealso{
-\code{\link{basis.score}} \code{\link{est.fGarch}} \code{\link{est.fGarchx}} \code{\link{diagnostic.fGarch}}
+\code{\link{est.fGarch}} \code{\link{est.fGarchx}} \code{\link{diagnostic.fGarch}}
 }

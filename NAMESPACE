@@ -2,7 +2,6 @@
 
 export(backtest.var)
 export(basis.est)
-export(basis.score)
 export(dgp.fgarch)
 export(dgp.fiid)
 export(diagnostic.fGarch)

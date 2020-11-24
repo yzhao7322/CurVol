@@ -45,22 +45,20 @@ install.packages("CurVol")
 
 1.  backtest.var - backtest the intra-day VaR forecasts
 2.  basis.est - estimate non-negative basis functions.
-3.  basis.score - functional scores by projecting the squared process
-    onto given basis functions.
-4.  dgp.fgarch - generate functional data following the functional
+3.  dgp.fgarch - generate functional data following the functional
     ARCH(1) or GARCH(1,1) process.
-5.  dgp.fiid - generate iid functional data following Ornstein–Uhlenbeck
+4.  dgp.fiid - generate iid functional data following Ornstein–Uhlenbeck
     process.
-6.  diagnostic.fGarch - estimation parameters as the inputs for
+5.  diagnostic.fGarch - estimation parameters as the inputs for
     diagnostic purposes.
-7.  est.fArch - estimate functional ARCH (q) model.
-8.  est.fGarch - estimate Functional GARCH (p,q) model.
-9.  est.fGarchx - estimate Functional GARCH-X model.
-10. fun\_hetero - test conditional heteroscedasticity for functional
+6.  est.fArch - estimate functional ARCH (q) model.
+7.  est.fGarch - estimate Functional GARCH (p,q) model.
+8.  est.fGarchx - estimate Functional GARCH-X model.
+9.  fun\_hetero - test conditional heteroscedasticity for functional
     data.
-11. gof.fgarch - goodness-of-fit test for functional ARCH/GARCH model.
-12. intra.return - intra-day return curves: intra-day return (IDR),
+10. gof.fgarch - goodness-of-fit test for functional ARCH/GARCH model.
+11. intra.return - intra-day return curves: intra-day return (IDR),
     cumulative intra-day return (CIDR), overnight cumulative intra-day
     return (OCIDR).
-13. sample\_data - a sample data containing S\&P 500 intra-day price.
-14. var.forecast - forecast daily/intra-day Value-at-Risk.
+12. sample\_data - a sample data containing S\&P 500 intra-day price.
+13. var.forecast - forecast daily/intra-day Value-at-Risk.

@@ -24,7 +24,7 @@
 #' \eqn{VaR_{i+1}^\tau(t)=\hat{\sigma}_{i+1}(t)\hat{\varepsilon}^\tau(t)}, for \eqn{1\leq i \leq N}, \eqn{t\in[0,1]}, and the percentile \eqn{\tau \in [0,1]},\cr
 #' where the forecats of conditional standard deviation \eqn{\hat{\sigma}_{i+1}(t)} can be obtained by using \code{\link{est.fArch}}, \code{\link{est.fGarch}}, or \code{\link{est.fGarchx}}. Note that when \eqn{t=1}, \eqn{VaR_{i+1}^\tau(1)} is the forecast of daily VaR.
 #'
-#' @seealso \code{\link{basis.est}} \code{\link{basis.score}} \code{\link{est.fGarch}} \code{\link{diagnostic.fGarch}}
+#' @seealso \code{\link{basis.est}} \code{\link{est.fGarch}} \code{\link{diagnostic.fGarch}}
 #' @examples
 #' # generate discrete evaluations of the FGARCH(1,1) process.
 #' grid_point = 50; N = 200
@@ -34,8 +34,7 @@
 #' basis_est = basis.est(yd, M=2, "tfpca")$basis
 #' # fit the curve data and the conditional volatility by using an FGARCH(1,1) model with M=1.
 #' fd = fda::Data2fd(argvals=seq(0,1,len=50),y=yd,fda::create.bspline.basis(nbasis=32))
-#' y_inp = basis.score(fd, basis_est[,1])
-#' garch11_est = est.fGarch(y_inp)
+#' garch11_est = est.fGarch(fd, basis_est[,1])
 #' diag_garch = diagnostic.fGarch(garch11_est, basis_est[,1], yd)
 #' # get the in-sample fitting of conditional variance.
 #' sigma_fit = diag_garch$sigma2[,1:N]
@@ -177,8 +176,7 @@ var.forecast <- function(yd,sigma_pred,error_fit,quantile_v,Method){
 #' basis_est = basis.est(yd, M=2, "tfpca")$basis
 #' # fit the curve data and the conditional volatility by using a FGARCH(1,1) model with M=1.
 #' fd = fda::Data2fd(argvals=seq(0,1,len=grid_point),y=yd,fda::create.bspline.basis(nbasis=32))
-#' y_inp = basis.score(fd, basis_est[,1])
-#' garch11_est = est.fGarch(y_inp)
+#' garch11_est = est.fGarch(fd, basis_est[,1])
 #' diag_garch = diagnostic.fGarch(garch11_est, basis_est[,1], yd)
 #' # get the in-sample fitting of conditional variance.
 #' sigma_fit = diag_garch$sigma2[,1:N]

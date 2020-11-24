@@ -42,8 +42,7 @@ fdy = fda::Data2fd(argvals=seq(0,1,len=50),y=yd,fda::create.bspline.basis(nbasis
 basis_est = basis.est(yd, M=2, "tfpca")$basis
 
 # fit the curve data with an FARCH(1) model.
-y_inp = basis.score(fdy, basis_est)
-arch_est = est.fArch(y_inp)
+arch_est = est.fArch(fdy, basis_est)
 
 # get parameters for diagnostic checking.
 diag_arch  = diagnostic.fGarch(arch_est, basis_est, yd)
@@ -53,5 +52,5 @@ diag_arch  = diagnostic.fGarch(arch_est, basis_est, yd)
 Rice, G., Wirjanto, T., Zhao, Y. (2020). Tests for conditional heteroscedasticity of functional data. Journal of Time Series Analysis.
 }
 \seealso{
-\code{\link{basis.score}} \code{\link{est.fArch}} \code{\link{est.fGarch}} \code{\link{est.fGarchx}} \code{\link{gof.fgarch}}
+\code{\link{est.fArch}} \code{\link{est.fGarch}} \code{\link{est.fGarchx}} \code{\link{gof.fgarch}}
 }

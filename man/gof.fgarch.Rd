@@ -44,5 +44,5 @@ Aue, A., Horvath, L., F. Pellatt, D. (2017). Functional generalized autoregressi
 Rice, G., Wirjanto, T., Zhao, Y. (2020). Tests for conditional heteroscedasticity of functional data. Journal of Time Series Analysis.
 }
 \seealso{
-\code{\link{basis.est}} \code{\link{basis.score}} \code{\link{est.fGarch}} \code{\link{diagnostic.fGarch}}
+\code{\link{basis.est}} \code{\link{est.fGarch}} \code{\link{diagnostic.fGarch}}
 }

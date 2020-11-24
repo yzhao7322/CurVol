@@ -4,12 +4,14 @@
 \alias{est.fGarchx}
 \title{Estimate Functional GARCH-X Model}
 \usage{
-est.fGarchx(y_vec, x_vec)
+est.fGarchx(fdata_y, fdata_x, basis)
 }
 \arguments{
-\item{y_vec}{A (number of observations) x (number of basis functions) matrix of projections of squared observations.}
+\item{fdata_y}{The functional data object with N paths for the objective data.}
 
-\item{x_vec}{A (number of observations) x (number of basis functions) matrix of projections of covariate X.}
+\item{fdata_x}{The functional data object with N paths for the covariate X.}
+
+\item{basis}{The M-dimensional basis functions.}
 }
 \value{
 List of model paramters:
@@ -42,10 +44,8 @@ fdx = fda::Data2fd(argvals=seq(0,1,len=50),y=xd,fda::create.bspline.basis(nbasis
 # extract data-driven basis functions through the truncated FPCA method.
 basis_est = basis.est(yd, M=2, "tfpca")$basis
 
-# fit a FGARCH-X model with the projection M=1.
-y_inp = basis.score(fdy, basis_est[,1])
-x_inp = basis.score(fdx, basis_est[,1])
-garchx_est = est.fGarchx(y_inp, x_inp)
+# estimate an FGARCH-X model with basis when M=1.
+garchx_est = est.fGarchx(fdy, fdx, basis_est[,1])
 
 }
 \references{
@@ -53,5 +53,5 @@ Cerovecki, C., Francq, C., Hormann, S., Zakoian, J. M. (2019). Functional GARCH 
 Rice, G., Wirjanto, T., Zhao, Y. (2020). Functional GARCH-X Model with an Application to Forecasting Crude Oil Return Curves. Working paper.
 }
 \seealso{
-\code{\link{basis.score}} \code{\link{est.fArch}} \code{\link{est.fGarch}} \code{\link{diagnostic.fGarch}}
+\code{\link{est.fArch}} \code{\link{est.fGarch}} \code{\link{diagnostic.fGarch}}
 }

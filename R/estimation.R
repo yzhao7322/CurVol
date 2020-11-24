@@ -1,26 +1,46 @@
-#' Projection Scores
+#' Estimate Functional ARCH Model
 #'
-#' @description basis.score function returns functional scores by projecting the squared process onto some given basis functions.
+#' @description est.fArch function estimates the Functional ARCH(q) model by using the Quasi-Maximum Likelihood Estimation method.
+#'
 #' @param fdata The functional data object with N paths.
 #' @param basis The M-dimensional basis functions.
+#' @param q The order of the depedence on past squared observations. If it is missing, q=1.
 #'
-#' @return A (N) x (M) matrix containing functional scores.
+#' @return List of model paramters:
+#' @return d: d Parameter vector, for intercept function \eqn{\delta}.
+#' @return As: A Matrices, for \eqn{\alpha} operators.
 #'
 #' @export
 #'
+#' @importFrom nloptr cobyla
 #' @importFrom fda Data2fd create.bspline.basis eval.fd
 #'
-#' @seealso \code{\link{est.fArch}} \code{\link{est.fGarch}} \code{\link{est.fGarchx}} \code{\link{diagnostic.fGarch}}
+#' @details
+#' This function estimates the Functional ARCH(q) model:\cr
+#' \eqn{x_i(t)=\sigma_i(t)\varepsilon_i(t)}, for \eqn{t \in [0,1]} and \eqn{1\leq i \leq N},\cr
+#' \eqn{\sigma_i^2(t)=\omega(t)+ \sum_{j=1}^q \int \alpha_j(t,s) x^2_{i-j}(s)ds}.
+#'
+#' @seealso \code{\link{est.fGarch}} \code{\link{est.fGarchx}} \code{\link{diagnostic.fGarch}}
+#'
 #' @examples
-#' # generate discrete evaluations of iid curve data.
-#' edata = dgp.fiid(50, 100)
-#' # smooth discrete data into functional curves.
-#' fd = fda::Data2fd(argvals=seq(0, 1, len = 50),y=edata,fda::create.bspline.basis(nbasis = 32))
-#' basis_poly = basis.est(edata, M=2, "poly")$basis
-#' bern = basis_poly$bern
-#' # get functional scores by projecting the squared process onto Bernstein basis.
-#' y_inp = basis.score(fd, bern)
-basis.score=function(fdata,basis){
+#' # generate discrete evaluations of the FARCH process.
+#' yd = dgp.fgarch(grid_point=50, N=200, "arch")
+#' yd = yd$garch_mat
+#' fd = fda::Data2fd(argvals=seq(0,1,len=50),y=yd,fda::create.bspline.basis(nbasis=32))
+#' # extract data-driven basis functions through the truncated FPCA method.
+#' basis_est = basis.est(yd, M=2, "tfpca")$basis
+#'
+#' # estimate an FARCH(1) model with basis when M=1.
+#' arch1_est = est.fArch(fd, basis_est[,1])
+#'
+#' @references
+#' Aue, A., Horvath, L., F. Pellatt, D. (2017). Functional generalized autoregressive conditional heteroskedasticity. Journal of Time Series Analysis, 38(1), 3-21.\cr
+#' Cerovecki, C., Francq, C., Hormann, S., Zakoian, J. M. (2019). Functional GARCH models: The quasi-likelihood approach and its applications. Journal of Econometrics, 209(2), 353-375.\cr
+#' Hormann, S., Horvath, L., Reeder, R. (2013). A functional version of the ARCH model. Econometric Theory, 29(2), 267-288.
+est.fArch=function(fdata, basis, q=1){
+  max_eval=10000
+
+  ## projecting the squared process onto given basis functions to get functional scores.
   basis=as.matrix(basis)
   N=dim(fdata$coefs)[2]
   grid_point=dim(basis)[1]
@@ -31,57 +51,13 @@ basis.score=function(fdata,basis){
     return((1/temp_n)*sum(mat))}
   fd_eval=eval.fd(seq(0, 1, length.out=grid_point), fdata)
 
-  fd_score=matrix(NA,N,M)
+  y_vec=matrix(NA,N,M)
   for(i in 1:N){
     for(j in 1:M){
-      fd_score[i,j]=int_approx(fd_eval[,i]^2*basis[,j])
+      y_vec[i,j]=int_approx(fd_eval[,i]^2*basis[,j])
     }
   }
-  return(as.matrix(fd_score))
-}
-
-
-
-#' Estimate Functional ARCH Model
-#'
-#' @description est.fArch function estimates the Functional ARCH(q) model by using the Quasi-Maximum Likelihood Estimation method.
-#'
-#' @param y_vec A (number of observations) x (number of basis functions) matrix of projections of squared observations.
-#' @param q The order of the depedence on past squared observations. If it is missing, q=1.
-#'
-#' @return List of model paramters:
-#' @return d: d Parameter vector, for intercept function \eqn{\delta}.
-#' @return As: A Matrices, for \eqn{\alpha} operators.
-#'
-#' @export
-#'
-#' @importFrom nloptr cobyla
-#'
-#' @details
-#' This function estimates the Functional ARCH(q) model:\cr
-#' \eqn{x_i(t)=\sigma_i(t)\varepsilon_i(t)}, for \eqn{t \in [0,1]} and \eqn{1\leq i \leq N},\cr
-#' \eqn{\sigma_i^2(t)=\omega(t)+ \sum_{j=1}^q \int \alpha_j(t,s) x^2_{i-j}(s)ds}.
-#'
-#' @seealso \code{\link{basis.score}} \code{\link{est.fGarch}} \code{\link{est.fGarchx}} \code{\link{diagnostic.fGarch}}
-#'
-#' @examples
-#' # generate discrete evaluations of the FARCH process.
-#' yd = dgp.fgarch(grid_point=50, N=200, "arch")
-#' yd = yd$garch_mat
-#' fd = fda::Data2fd(argvals=seq(0,1,len=50),y=yd,fda::create.bspline.basis(nbasis=32))
-#' # extract data-driven basis functions through the truncated FPCA method.
-#' basis_est = basis.est(yd, M=2, "tfpca")$basis
-#'
-#' # fit a FARCH(1) model with the projection M=1.
-#' y_inp = basis.score(fd, basis_est[,1])
-#' arch1_est = est.fArch(y_inp)
-#'
-#' @references
-#' Aue, A., Horvath, L., F. Pellatt, D. (2017). Functional generalized autoregressive conditional heteroskedasticity. Journal of Time Series Analysis, 38(1), 3-21.\cr
-#' Cerovecki, C., Francq, C., Hormann, S., Zakoian, J. M. (2019). Functional GARCH models: The quasi-likelihood approach and its applications. Journal of Econometrics, 209(2), 353-375.\cr
-#' Hormann, S., Horvath, L., Reeder, R. (2013). A functional version of the ARCH model. Econometric Theory, 29(2), 267-288.
-est.fArch=function(y_vec,q=1){
-  max_eval=10000
+  y_vec = as.matrix(y_vec)
 
   # Objective function 2
   obj_fn2_q=function(theta,ysq,M,q){
@@ -209,12 +185,12 @@ est.fArch=function(y_vec,q=1){
 
 
 
-##This function uses the internal functions to fit a QMLE model
-#' Fit a Functional GARCH(p,q) model
+#' Estimate Functional GARCH Model
 #'
-#' This function allows you to fit a funcGARCH(p,q) using QMLE, given the matrix of squared projections onto a finite number of basis functions.
+#' @description est.fGarch function estimates the Functional GARCH(p,q) model by using the Quasi-Maximum Likelihood Estimation method.
 #'
-#' @param y_vec (number of observations) x (number of basis functions) matrix of projections of squared observations.
+#' @param fdata The functional data object with N paths.
+#' @param basis The M-dimensional basis functions.
 #' @param p order of the depedence on past volatilities.
 #' @param q order of the depedence on past squared observations.
 #'
@@ -232,23 +208,42 @@ est.fArch=function(y_vec,q=1){
 #' @import stats
 #' @import sfsmisc
 #' @importFrom nloptr cobyla
+#' @importFrom fda Data2fd create.bspline.basis eval.fd
 #'
-#' @seealso \code{\link{basis.score}} \code{\link{est.fArch}} \code{\link{est.fGarchx}} \code{\link{diagnostic.fGarch}}
+#' @seealso \code{\link{est.fArch}} \code{\link{est.fGarchx}} \code{\link{diagnostic.fGarch}}
 #'
 #' @examples
 #' # generate discrete evaluations of the FARCH process.
-#' yd = dgp.fgarch(grid_point=50, N=200, "arch")
+#' yd = dgp.fgarch(grid_point=50, N=200, "garch")
 #' yd = yd$garch_mat
 #' fd = fda::Data2fd(argvals=seq(0,1,len=50),y=yd,fda::create.bspline.basis(nbasis=32))
 #' # extract data-driven basis functions through the truncated FPCA method.
 #' basis_est = basis.est(yd, M=2, "tfpca")$basis
 #'
-#' # fit a FGARCH(1,1) model with the projection M=1.
-#' y_inp = basis.score(fd, basis_est[,1])
-#' garch11_est = est.fGarch(y_inp)
+#' # estimate an FGARCH(1,1) model with basis when M=1.
+#' garch11_est = est.fGarch(fd, basis_est[,1])
 #'
-est.fGarch=function(y_vec,p=1,q=1){
+est.fGarch=function(fdata, basis, p=1, q=1){
   max_eval=10000
+
+  ## projecting the squared process onto given basis functions to get functional scores.
+  basis=as.matrix(basis)
+  N=dim(fdata$coefs)[2]
+  grid_point=dim(basis)[1]
+  M=dim(basis)[2]
+
+  int_approx=function(mat){
+    temp_n=NROW(mat)
+    return((1/temp_n)*sum(mat))}
+  fd_eval=eval.fd(seq(0, 1, length.out=grid_point), fdata)
+
+  y_vec=matrix(NA,N,M)
+  for(i in 1:N){
+    for(j in 1:M){
+      y_vec[i,j]=int_approx(fd_eval[,i]^2*basis[,j])
+    }
+  }
+  y_vec = as.matrix(y_vec)
 
   # Objective function 2
   obj_fn2_pq_cpp=function(theta,ysq,M,p,q){
@@ -399,8 +394,10 @@ est.fGarch=function(y_vec,p=1,q=1){
 #'
 #' @description est.fGarchx function estimates the Functional GARCH-X model by using the Quasi-Maximum Likelihood Estimation method.
 #'
-#' @param y_vec A (number of observations) x (number of basis functions) matrix of projections of squared observations.
-#' @param x_vec A (number of observations) x (number of basis functions) matrix of projections of covariate X.
+#' @param fdata_y The functional data object with N paths for the objective data.
+#' @param fdata_x The functional data object with N paths for the covariate X.
+#' @param basis The M-dimensional basis functions.
+#'
 #'
 #' @return List of model paramters:
 #' @return d: d Parameter vector, for intercept function \eqn{\delta}.
@@ -412,6 +409,7 @@ est.fGarch=function(y_vec,p=1,q=1){
 #'
 #' @import sfsmisc
 #' @importFrom nloptr cobyla
+#' @importFrom fda Data2fd create.bspline.basis eval.fd
 #'
 #' @details
 #' This function estimates the Functional GARCH-X model:\cr
@@ -419,7 +417,7 @@ est.fGarch=function(y_vec,p=1,q=1){
 #' \eqn{\sigma_i^2(t)=\omega(t)+\int \alpha(t,s) y^2_{i-1}(s)ds+\int \beta(t,s) \sigma^2_{i-1}(s)ds + \int \theta(t,s) x^2_{i-1}(s)ds},\cr
 #' where \eqn{x_i(t)} is an exogenous variable.
 #'
-#' @seealso \code{\link{basis.score}} \code{\link{est.fArch}} \code{\link{est.fGarch}} \code{\link{diagnostic.fGarch}}
+#' @seealso \code{\link{est.fArch}} \code{\link{est.fGarch}} \code{\link{diagnostic.fGarch}}
 #'
 #' @examples
 #' # generate discrete evaluations of the FARCH and FGARCH processes.
@@ -432,16 +430,35 @@ est.fGarch=function(y_vec,p=1,q=1){
 #' # extract data-driven basis functions through the truncated FPCA method.
 #' basis_est = basis.est(yd, M=2, "tfpca")$basis
 #'
-#' # fit a FGARCH-X model with the projection M=1.
-#' y_inp = basis.score(fdy, basis_est[,1])
-#' x_inp = basis.score(fdx, basis_est[,1])
-#' garchx_est = est.fGarchx(y_inp, x_inp)
+#' # estimate an FGARCH-X model with basis when M=1.
+#' garchx_est = est.fGarchx(fdy, fdx, basis_est[,1])
 #'
 #' @references
 #' Cerovecki, C., Francq, C., Hormann, S., Zakoian, J. M. (2019). Functional GARCH models: The quasi-likelihood approach and its applications. Journal of econometrics, 209(2), 353-375.\cr
 #' Rice, G., Wirjanto, T., Zhao, Y. (2020). Functional GARCH-X Model with an Application to Forecasting Crude Oil Return Curves. Working paper.
-est.fGarchx=function(y_vec,x_vec){
+est.fGarchx=function(fdata_y, fdata_x, basis){
   max_eval=10000
+  ## projecting the squared process onto given basis functions to get functional scores.
+  basis=as.matrix(basis)
+  N=dim(fdata_y$coefs)[2]
+  grid_point=dim(basis)[1]
+  M=dim(basis)[2]
+
+  int_approx=function(mat){
+    temp_n=NROW(mat)
+    return((1/temp_n)*sum(mat))}
+  fd_eval_y=eval.fd(seq(0, 1, length.out=grid_point), fdata_y)
+  fd_eval_x=eval.fd(seq(0, 1, length.out=grid_point), fdata_x)
+
+  y_vec = x_vec = matrix(NA,N,M)
+  for(i in 1:N){
+    for(j in 1:M){
+      y_vec[i,j]=int_approx(fd_eval_y[,i]^2*basis[,j])
+      x_vec[i,j]=int_approx(fd_eval_x[,i]^2*basis[,j])
+    }
+  }
+  y_vec = as.matrix(y_vec)
+  x_vec = as.matrix(x_vec)
 
   # Objective function 2
   obj_fn2=function(theta,ysq,xs,M){
@@ -527,7 +544,6 @@ est.fGarchx=function(y_vec,x_vec){
   ag_lower=rep(10^-10,num_mat_params)
   b_lower=rep(10^-20,num_mat_params)
   #constrained optimization
-  x_vec=as.matrix(x_vec)
   #formualte objective in terms of theta only
   obj_fn3=function(theta){obj_fn2(theta=theta,ysq=y_vec,xs=x_vec,M=M)}
 
@@ -596,7 +612,6 @@ est.fGarchx=function(y_vec,x_vec){
 
 
 
-
 #' Diagnostic information derived from the estimation
 #'
 #' @description diagnostic.fGarch function provides the estimation parameters that can be used as the inputs for a diagnostic purpose.
@@ -616,7 +631,7 @@ est.fGarchx=function(y_vec,x_vec){
 #'
 #' @export
 #'
-#' @seealso \code{\link{basis.score}} \code{\link{est.fArch}} \code{\link{est.fGarch}} \code{\link{est.fGarchx}} \code{\link{gof.fgarch}}
+#' @seealso \code{\link{est.fArch}} \code{\link{est.fGarch}} \code{\link{est.fGarchx}} \code{\link{gof.fgarch}}
 #'
 #' @examples
 #' # generate discrete evaluations of the FARCH process.
@@ -627,8 +642,7 @@ est.fGarchx=function(y_vec,x_vec){
 #' basis_est = basis.est(yd, M=2, "tfpca")$basis
 #'
 #' # fit the curve data with an FARCH(1) model.
-#' y_inp = basis.score(fdy, basis_est)
-#' arch_est = est.fArch(y_inp)
+#' arch_est = est.fArch(fdy, basis_est)
 #'
 #' # get parameters for diagnostic checking.
 #' diag_arch  = diagnostic.fGarch(arch_est, basis_est, yd)
