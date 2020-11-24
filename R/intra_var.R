@@ -30,21 +30,26 @@
 #' grid_point = 50; N = 200
 #' yd = dgp.fgarch(grid_point, N, "garch")
 #' yd = yd$garch_mat
+#'
 #' # extract data-driven basis functions through the truncated FPCA method.
 #' basis_est = basis.est(yd, M=2, "tfpca")$basis
+#'
 #' # fit the curve data and the conditional volatility by using an FGARCH(1,1) model with M=1.
 #' fd = fda::Data2fd(argvals=seq(0,1,len=50),y=yd,fda::create.bspline.basis(nbasis=32))
 #' garch11_est = est.fGarch(fd, basis_est[,1])
 #' diag_garch = diagnostic.fGarch(garch11_est, basis_est[,1], yd)
+#'
 #' # get the in-sample fitting of conditional variance.
 #' sigma_fit = diag_garch$sigma2[,1:N]
 #' error_fit = diag_garch$eps
 #'
 #' # get in-sample intra-day VaR curve by assuming a point-wisely Gaussian distributed error term.
 #' var_obj = var.forecast(yd, sigma_fit, error_fit, quantile_v=0.01, Method="normal")
-#' # the intra-day VaR curves
+#'
+#' # the intra-day VaR curves.
 #' var_obj$intraday_VaR
-#' # the violation process
+#'
+#' # the violation process.
 #' var_obj$vio_seq
 #'
 #' @references
@@ -172,18 +177,23 @@ var.forecast <- function(yd,sigma_pred,error_fit,quantile_v,Method){
 #' grid_point = 50; N = 200
 #' yd = dgp.fgarch(grid_point, N, "garch")
 #' yd = yd$garch_mat
+#'
 #' # extract data-driven basis functions through the truncated FPCA method.
 #' basis_est = basis.est(yd, M=2, "tfpca")$basis
+#'
 #' # fit the curve data and the conditional volatility by using a FGARCH(1,1) model with M=1.
 #' fd = fda::Data2fd(argvals=seq(0,1,len=grid_point),y=yd,fda::create.bspline.basis(nbasis=32))
 #' garch11_est = est.fGarch(fd, basis_est[,1])
 #' diag_garch = diagnostic.fGarch(garch11_est, basis_est[,1], yd)
+#'
 #' # get the in-sample fitting of conditional variance.
 #' sigma_fit = diag_garch$sigma2[,1:N]
 #' error_fit = diag_garch$eps
+#'
 #' # get in-sample intra-day VaR curve by assuming a point-wisely Gaussian distributed error term.
 #' var_obj = var.forecast(yd, sigma_fit, error_fit, quantile_v=0.01, Method="normal")
 #' intra_var = var_obj$intraday_VaR
+#'
 #' # get the violation curves.
 #' intra_vio = var_obj$vio_seq
 #'

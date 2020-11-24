@@ -18,20 +18,21 @@ est.fGarch(fdata, basis, p = 1, q = 1)
 \value{
 List of model paramters:
 
-d: d Parameter vector, for intercept function \eqn{\delta}. See Aue et. al 2017/Cerovecki2019
+d: d Parameter vector, for intercept function \eqn{\delta}.
 
-As: A Matrices, for \eqn{\alpha} operators. See Aue et. al 2017/Cerovecki2019
+As: A Matrices, for \eqn{\alpha} operators.
 
-Bs: B Matrices, for \eqn{\beta} operators. See Aue et. al 2017/Cerovecki2019
+Bs: B Matrices, for \eqn{\beta} operators.
 }
 \description{
 est.fGarch function estimates the Functional GARCH(p,q) model by using the Quasi-Maximum Likelihood Estimation method.
 }
 \examples{
-# generate discrete evaluations of the FARCH process.
+# generate discrete evaluations of the FGARCH process and smooth them into a functional data object.
 yd = dgp.fgarch(grid_point=50, N=200, "garch")
 yd = yd$garch_mat
 fd = fda::Data2fd(argvals=seq(0,1,len=50),y=yd,fda::create.bspline.basis(nbasis=32))
+
 # extract data-driven basis functions through the truncated FPCA method.
 basis_est = basis.est(yd, M=2, "tfpca")$basis
 
@@ -40,8 +41,8 @@ garch11_est = est.fGarch(fd, basis_est[,1])
 
 }
 \references{
-Aue, A., Horvath, L., and F. Pellatt, D. (2017) Functional Generalized Autoregressive Conditional Heteroskedasticity. J. Time Ser. Anal., 38: 3- 21. doi: 10.1111/jtsa.12192.\cr
-Cerovecki, Clement & Francq, Christian & Hormann, Siegfried & Zakoian, Jean-Michel, 2019. "Functional GARCH models: The quasi-likelihood approach and its applications," Journal of Econometrics, Elsevier, vol. 209(2), pages 353-375.
+Aue, A., Horvath, L., and F. Pellatt, D. (2017) Functional Generalized Autoregressive Conditional Heteroskedasticity. Journal of Time Series Analysis, 38(1) 3-21.\cr
+Cerovecki, C., Francq, C., Hormann, S., Zakoian, J.M. (2019). Functional GARCH models: The quasi-likelihood approach and its applications. Journal of Econometrics, 209(2), pages 353-375.
 }
 \seealso{
 \code{\link{est.fArch}} \code{\link{est.fGarchx}} \code{\link{diagnostic.fGarch}}

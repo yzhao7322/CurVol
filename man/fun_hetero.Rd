@@ -23,7 +23,7 @@ stats: the test statistic.
 p_value: the P_value.
 }
 \description{
-fun_hetero applies a test of the null hypothesis that the objective functional curve data is not conditionally heteroscedastic, small p-values suggest that the curves exhibit conditional heteroscedasticity.
+fun_hetero function tests the null hypothesis that the objective functional curve data is not conditionally heteroscedastic. If a small P-value rejects the null hypothesis,  the curves exhibit conditional heteroscedasticity.
 }
 \details{
 Given the objective curve data \eqn{x_i(t)}, for \eqn{1\leq i \leq N}, \eqn{t\in[0,1]}, the test aims at distinguishing the hypotheses:\cr
@@ -41,7 +41,7 @@ fun_hetero(yd, K=5, "functional")
 
 }
 \references{
-Rice, G., Wirjanto, T., Zhao, Y. (2020). Tests for conditional heteroscedasticity of functional data. Journal of Time Series Analysis.
+Rice, G., Wirjanto, T., Zhao, Y. (2020). Tests for conditional heteroscedasticity of functional data. Journal of Time Series Analysis, 41(6), 733-758.
 }
 \seealso{
 \code{\link{sample_data}}

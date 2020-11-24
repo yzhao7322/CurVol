@@ -34,13 +34,14 @@ This function estimates the Functional GARCH-X model:\cr
 where \eqn{x_i(t)} is an exogenous variable.
 }
 \examples{
-# generate discrete evaluations of the FARCH and FGARCH processes.
+# generate discrete evaluations and smooth them into functional data objects.
 yd = dgp.fgarch(grid_point=50, N=200, "arch")
 yd = yd$garch_mat
 xd = dgp.fgarch(grid_point=50, N=200, "garch")
 xd = xd$garch_mat
 fdy = fda::Data2fd(argvals=seq(0,1,len=50),y=yd,fda::create.bspline.basis(nbasis=32))
 fdx = fda::Data2fd(argvals=seq(0,1,len=50),y=xd,fda::create.bspline.basis(nbasis=32))
+
 # extract data-driven basis functions through the truncated FPCA method.
 basis_est = basis.est(yd, M=2, "tfpca")$basis
 

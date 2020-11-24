@@ -14,6 +14,7 @@ sample_data
 A dataset of S&P 500 intra-day price at one-minute frequence from 9:30 a.m. to 4:00 p.m.. The sample ranges from 02/January/2015 to 29/March/2018, and trading days with missing intra-day observations have been eliminated from the sample.
 }
 \examples{
+# load the data
 yd = as.matrix(sample_data)
 grid_point = dim(yd)[1]
 N = dim(yd)[2]

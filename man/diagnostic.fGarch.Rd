@@ -34,10 +34,11 @@ kernel_op: estimated kernel coefficient operators.
 diagnostic.fGarch function provides the estimation parameters that can be used as the inputs for a diagnostic purpose.
 }
 \examples{
-# generate discrete evaluations of the FARCH process.
+# generate discrete evaluations of the FGARCH process and smooth them into a functional data object.
 yd = dgp.fgarch(grid_point=50, N=200, "garch")
 yd = yd$garch_mat
 fdy = fda::Data2fd(argvals=seq(0,1,len=50),y=yd,fda::create.bspline.basis(nbasis=32))
+
 # extract data-driven basis functions through the truncated FPCA method.
 basis_est = basis.est(yd, M=2, "tfpca")$basis
 

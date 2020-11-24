@@ -1,6 +1,6 @@
 #' Test for Conditional Heteroscedasticity of Functional Data
 #'
-#' @description fun_hetero applies a test of the null hypothesis that the objective functional curve data is not conditionally heteroscedastic, small p-values suggest that the curves exhibit conditional heteroscedasticity.
+#' @description fun_hetero function tests the null hypothesis that the objective functional curve data is not conditionally heteroscedastic. If a small P-value rejects the null hypothesis,  the curves exhibit conditional heteroscedasticity.
 #'
 #' @param yd A (grid_point) x (number of observations) matrix drawn from N intra-day return curves.
 #' @param K The lag autocorrelation coefficients served for the conditional heteroscedasticity test. If it is missing, a default value "K=20" is used.
@@ -10,7 +10,6 @@
 #' @return List of objects:
 #' @return stats: the test statistic.
 #' @return p_value: the P_value.
-#'
 #'
 #' @export
 #' @importFrom graphics abline plot
@@ -34,7 +33,7 @@
 #' fun_hetero(yd, K=5, "functional")
 #'
 #' @references
-#' Rice, G., Wirjanto, T., Zhao, Y. (2020). Tests for conditional heteroscedasticity of functional data. Journal of Time Series Analysis.
+#' Rice, G., Wirjanto, T., Zhao, Y. (2020). Tests for conditional heteroscedasticity of functional data. Journal of Time Series Analysis, 41(6), 733-758.
 fun_hetero <- function (yd, K=NULL, stat_Method, pplot=NULL){
 
   if(is.null(K) == TRUE) {
@@ -209,7 +208,7 @@ fun_hetero <- function (yd, K=NULL, stat_Method, pplot=NULL){
 
 #' Goodness-of-fit Test for Functional ARCH/GARCH Model
 #'
-#' @description gof.fgarch function approximates the P-value of the \eqn{M_{N,K}} statistics accounting for the effect of functional GARCH parameter estimation.
+#' @description gof.fgarch function tests the goodness-of-fit of functional ARCH/GARCH models by accounting for the effect of functional GARCH parameter estimation.
 #'
 #' @param yd A (grid_point) x (number of observations) matrix drawn from N discrete evaluation curves.
 #' @param basis The M-dimensional basis functions.
@@ -230,18 +229,20 @@ fun_hetero <- function (yd, K=NULL, stat_Method, pplot=NULL){
 #' @seealso \code{\link{basis.est}} \code{\link{est.fGarch}} \code{\link{diagnostic.fGarch}}
 #'
 #' @examples
-#' # generate discrete evaluations of the FARCH process.
+#' # generate discrete evaluations of the FGARCH process.
 #' grid_point=50; N=200
 #' yd = dgp.fgarch(grid_point, N, "garch")
 #' yd = yd$garch_mat
+#'
+#' # extract data-driven basis functions through the truncated FPCA method.
 #' basis_est = basis.est(yd, M=2, "tfpca")$basis
 #'
-#' # test the adequacy of the FGARCH(1,1) model.
+#' # test the adequacy of the FARCH(1) model.
 #' gof.fgarch(yd, basis_est[,1], "arch", K=5)
 #'
 #' @references
 #' Aue, A., Horvath, L., F. Pellatt, D. (2017). Functional generalized autoregressive conditional heteroskedasticity. Journal of Time Series Analysis, 38(1), 3-21.\cr
-#' Rice, G., Wirjanto, T., Zhao, Y. (2020). Tests for conditional heteroscedasticity of functional data. Journal of Time Series Analysis.
+#' Rice, G., Wirjanto, T., Zhao, Y. (2020). Tests for conditional heteroscedasticity of functional data. Journal of Time Series Analysis, 41(6), 733-758.
 #'
 gof.fgarch <- function (yd, basis, model, K=NULL, pplot=NULL, max_eval=10000){
 

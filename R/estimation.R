@@ -23,10 +23,11 @@
 #' @seealso \code{\link{est.fGarch}} \code{\link{est.fGarchx}} \code{\link{diagnostic.fGarch}}
 #'
 #' @examples
-#' # generate discrete evaluations of the FARCH process.
+#' # generate discrete evaluations of the FARCH process and smooth them into a functional data object.
 #' yd = dgp.fgarch(grid_point=50, N=200, "arch")
 #' yd = yd$garch_mat
 #' fd = fda::Data2fd(argvals=seq(0,1,len=50),y=yd,fda::create.bspline.basis(nbasis=32))
+#'
 #' # extract data-driven basis functions through the truncated FPCA method.
 #' basis_est = basis.est(yd, M=2, "tfpca")$basis
 #'
@@ -195,13 +196,13 @@ est.fArch=function(fdata, basis, q=1){
 #' @param q order of the depedence on past squared observations.
 #'
 #' @return List of model paramters:
-#' @return d: d Parameter vector, for intercept function \eqn{\delta}. See Aue et. al 2017/Cerovecki2019
-#' @return As: A Matrices, for \eqn{\alpha} operators. See Aue et. al 2017/Cerovecki2019
-#' @return Bs: B Matrices, for \eqn{\beta} operators. See Aue et. al 2017/Cerovecki2019
+#' @return d: d Parameter vector, for intercept function \eqn{\delta}.
+#' @return As: A Matrices, for \eqn{\alpha} operators.
+#' @return Bs: B Matrices, for \eqn{\beta} operators.
 #'
 #' @references
-#' Aue, A., Horvath, L., and F. Pellatt, D. (2017) Functional Generalized Autoregressive Conditional Heteroskedasticity. J. Time Ser. Anal., 38: 3- 21. doi: 10.1111/jtsa.12192.\cr
-#' Cerovecki, Clement & Francq, Christian & Hormann, Siegfried & Zakoian, Jean-Michel, 2019. "Functional GARCH models: The quasi-likelihood approach and its applications," Journal of Econometrics, Elsevier, vol. 209(2), pages 353-375.
+#' Aue, A., Horvath, L., and F. Pellatt, D. (2017) Functional Generalized Autoregressive Conditional Heteroskedasticity. Journal of Time Series Analysis, 38(1) 3-21.\cr
+#' Cerovecki, C., Francq, C., Hormann, S., Zakoian, J.M. (2019). Functional GARCH models: The quasi-likelihood approach and its applications. Journal of Econometrics, 209(2), pages 353-375.
 #'
 #' @export
 #'
@@ -213,10 +214,11 @@ est.fArch=function(fdata, basis, q=1){
 #' @seealso \code{\link{est.fArch}} \code{\link{est.fGarchx}} \code{\link{diagnostic.fGarch}}
 #'
 #' @examples
-#' # generate discrete evaluations of the FARCH process.
+#' # generate discrete evaluations of the FGARCH process and smooth them into a functional data object.
 #' yd = dgp.fgarch(grid_point=50, N=200, "garch")
 #' yd = yd$garch_mat
 #' fd = fda::Data2fd(argvals=seq(0,1,len=50),y=yd,fda::create.bspline.basis(nbasis=32))
+#'
 #' # extract data-driven basis functions through the truncated FPCA method.
 #' basis_est = basis.est(yd, M=2, "tfpca")$basis
 #'
@@ -420,13 +422,14 @@ est.fGarch=function(fdata, basis, p=1, q=1){
 #' @seealso \code{\link{est.fArch}} \code{\link{est.fGarch}} \code{\link{diagnostic.fGarch}}
 #'
 #' @examples
-#' # generate discrete evaluations of the FARCH and FGARCH processes.
+#' # generate discrete evaluations and smooth them into functional data objects.
 #' yd = dgp.fgarch(grid_point=50, N=200, "arch")
 #' yd = yd$garch_mat
 #' xd = dgp.fgarch(grid_point=50, N=200, "garch")
 #' xd = xd$garch_mat
 #' fdy = fda::Data2fd(argvals=seq(0,1,len=50),y=yd,fda::create.bspline.basis(nbasis=32))
 #' fdx = fda::Data2fd(argvals=seq(0,1,len=50),y=xd,fda::create.bspline.basis(nbasis=32))
+#'
 #' # extract data-driven basis functions through the truncated FPCA method.
 #' basis_est = basis.est(yd, M=2, "tfpca")$basis
 #'
@@ -634,10 +637,11 @@ est.fGarchx=function(fdata_y, fdata_x, basis){
 #' @seealso \code{\link{est.fArch}} \code{\link{est.fGarch}} \code{\link{est.fGarchx}} \code{\link{gof.fgarch}}
 #'
 #' @examples
-#' # generate discrete evaluations of the FARCH process.
+#' # generate discrete evaluations of the FGARCH process and smooth them into a functional data object.
 #' yd = dgp.fgarch(grid_point=50, N=200, "garch")
 #' yd = yd$garch_mat
 #' fdy = fda::Data2fd(argvals=seq(0,1,len=50),y=yd,fda::create.bspline.basis(nbasis=32))
+#'
 #' # extract data-driven basis functions through the truncated FPCA method.
 #' basis_est = basis.est(yd, M=2, "tfpca")$basis
 #'

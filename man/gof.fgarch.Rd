@@ -23,25 +23,27 @@ gof.fgarch(yd, basis, model, K = NULL, pplot = NULL, max_eval = 10000)
 The P_value of the \eqn{M_{N,K}} statistic.
 }
 \description{
-gof.fgarch function approximates the P-value of the \eqn{M_{N,K}} statistics accounting for the effect of functional GARCH parameter estimation.
+gof.fgarch function tests the goodness-of-fit of functional ARCH/GARCH models by accounting for the effect of functional GARCH parameter estimation.
 }
 \details{
 The test statistic used is as the same as the \eqn{M_{N,K}} statistic in \code{\link{fun_hetero}}. However, the asymptotic distribution is adjusted to account for the estimation effect, because the model residual depends on the joint asymptotics of the innovation process and the estimated parameters. We assume that the kernel parameters are consistently estimated by the Least Squares method proposed in Aue et al. (2017). Then, the asymptotic distribution of the statistic \eqn{M_{N,K}} is given in Theorem 3.1 in Rice et al. (2020).
 }
 \examples{
-# generate discrete evaluations of the FARCH process.
+# generate discrete evaluations of the FGARCH process.
 grid_point=50; N=200
 yd = dgp.fgarch(grid_point, N, "garch")
 yd = yd$garch_mat
+
+# extract data-driven basis functions through the truncated FPCA method.
 basis_est = basis.est(yd, M=2, "tfpca")$basis
 
-# test the adequacy of the FGARCH(1,1) model.
+# test the adequacy of the FARCH(1) model.
 gof.fgarch(yd, basis_est[,1], "arch", K=5)
 
 }
 \references{
 Aue, A., Horvath, L., F. Pellatt, D. (2017). Functional generalized autoregressive conditional heteroskedasticity. Journal of Time Series Analysis, 38(1), 3-21.\cr
-Rice, G., Wirjanto, T., Zhao, Y. (2020). Tests for conditional heteroscedasticity of functional data. Journal of Time Series Analysis.
+Rice, G., Wirjanto, T., Zhao, Y. (2020). Tests for conditional heteroscedasticity of functional data. Journal of Time Series Analysis, 41(6), 733-758.
 }
 \seealso{
 \code{\link{basis.est}} \code{\link{est.fGarch}} \code{\link{diagnostic.fGarch}}

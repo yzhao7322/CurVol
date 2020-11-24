@@ -29,10 +29,11 @@ This function estimates the Functional ARCH(q) model:\cr
 \eqn{\sigma_i^2(t)=\omega(t)+ \sum_{j=1}^q \int \alpha_j(t,s) x^2_{i-j}(s)ds}.
 }
 \examples{
-# generate discrete evaluations of the FARCH process.
+# generate discrete evaluations of the FARCH process and smooth them into a functional data object.
 yd = dgp.fgarch(grid_point=50, N=200, "arch")
 yd = yd$garch_mat
 fd = fda::Data2fd(argvals=seq(0,1,len=50),y=yd,fda::create.bspline.basis(nbasis=32))
+
 # extract data-driven basis functions through the truncated FPCA method.
 basis_est = basis.est(yd, M=2, "tfpca")$basis
 

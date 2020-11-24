@@ -162,6 +162,7 @@ dgp.fgarch <- function(grid_point, N, type, alpha_par=NULL, beta_par=NULL){
 #'
 #' @seealso \code{\link{intra.return}}
 #' @examples
+#' # load the data
 #' yd = as.matrix(sample_data)
 #' grid_point = dim(yd)[1]
 #' N = dim(yd)[2]
