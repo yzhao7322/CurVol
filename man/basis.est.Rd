@@ -11,7 +11,7 @@ basis.est(yd, M, type)
 
 \item{M}{The number/order of basis functions, by setting \eqn{M <= 10}.}
 
-\item{type}{A string to switch estimation method: "poly" - exponential and Bernstein functions; "tfpca" - truncated non-negative functional principal components; "fsnn" - sparse and non-negative functional principal components; "tpf" - truncated predictive factors.}
+\item{type}{A string to switch estimation method: "poly" - exponential and Bernstein functions; "tfpca" - truncated functional principal components; "fsnn" - sparse and non-negative functional principal components; "tpf" - truncated predictive factors.}
 }
 \value{
 List of objects:

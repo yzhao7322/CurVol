@@ -68,7 +68,7 @@ intra.return <- function(yd){
 #'
 #' @param yd A (grid_point) x (number of observations) matrix drawn from N discrete evaluation curves.
 #' @param M The number/order of basis functions, by setting \eqn{M <= 10}.
-#' @param type A string to switch estimation method: "poly" - exponential and Bernstein functions; "tfpca" - truncated non-negative functional principal components; "fsnn" - sparse and non-negative functional principal components; "tpf" - truncated predictive factors.
+#' @param type A string to switch estimation method: "poly" - exponential and Bernstein functions; "tfpca" - truncated functional principal components; "fsnn" - sparse and non-negative functional principal components; "tpf" - truncated predictive factors.
 #'
 #' @return List of objects:
 #' @return basis: a (grid_point) x (M) matrix containing discrete evaluations of M data-driven bases; when "poly" is applied, the basis contains a list with 'exp' for exponential and 'bern' for Bernstein.
@@ -240,8 +240,9 @@ basis.est <- function(yd, M, type){
              return(list(C, C1))
            }
 
-           d = nrow(yd)
-           C_est=est_cov(yd,h)
+           squared_y = yd*yd
+           d = nrow(squared_y)
+           C_est=est_cov(squared_y,h)
            C=C_est[[1]]
            C1=C_est[[2]]
            # Calculate Ca
