@@ -13,7 +13,7 @@ gof.fgarch(yd, basis, model, K = NULL, pplot = NULL, max_eval = 10000)
 
 \item{model}{A string to indicate which model will be estimated: "arch" - FARCH(1); "garch" - FGARCH(1,1).}
 
-\item{K}{The statistic will be based on H lag autocorrelation coefficients. If it is missing, a default value "K=20" is used.}
+\item{K}{The statistic will be based on K lag autocorrelation coefficients. If it is missing, a default value "K=20" is used.}
 
 \item{pplot}{An optional argument to compute and plot the P-values as a function of K, K=1,2,...,20. If pplot=1, the p-values will be computed and figured; if it is missing, this step will be skipped.}
 

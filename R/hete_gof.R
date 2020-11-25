@@ -213,7 +213,7 @@ fun_hetero <- function (yd, K=NULL, stat_Method, pplot=NULL){
 #' @param yd A (grid_point) x (number of observations) matrix drawn from N discrete evaluation curves.
 #' @param basis The M-dimensional basis functions.
 #' @param model A string to indicate which model will be estimated: "arch" - FARCH(1); "garch" - FGARCH(1,1).
-#' @param K The statistic will be based on H lag autocorrelation coefficients. If it is missing, a default value "K=20" is used.
+#' @param K The statistic will be based on K lag autocorrelation coefficients. If it is missing, a default value "K=20" is used.
 #' @param pplot An optional argument to compute and plot the P-values as a function of K, K=1,2,...,20. If pplot=1, the p-values will be computed and figured; if it is missing, this step will be skipped.
 #' @param max_eval The maximum number of evaluations of the optimization function.
 #'
