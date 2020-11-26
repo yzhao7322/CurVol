@@ -66,5 +66,5 @@ var_obj$intraday_VaR
 Rice, G., Wirjanto, T., Zhao, Y. (2020). Forecasting Value at Risk via intra-Day return curves. International Journal of Forecasting.
 }
 \seealso{
-\code{\link{basis.est}} \code{\link{est.fGarch}} \code{\link{diagnostic.fGarch}}
+\code{\link{basis.est}} \code{\link{est.fGarch}} \code{\link{diagnostic.fGarch}} \code{\link{var.backtest}} \code{\link{var.vio}}
 }

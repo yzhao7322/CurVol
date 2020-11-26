@@ -26,5 +26,5 @@ where \eqn{I(\cdot)} is an indicator function.
 Rice, G., Wirjanto, T., Zhao, Y. (2020). Forecasting Value at Risk via intra-Day return curves. International Journal of Forecasting.
 }
 \seealso{
-\code{\link{var.forecast}}
+\code{\link{var.forecast}} \code{\link{var.backtest}}
 }

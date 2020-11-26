@@ -24,7 +24,7 @@
 #' \eqn{VaR_{i+1}^\tau(t)=\hat{\sigma}_{i+1}(t)\hat{\varepsilon}^\tau(t)}, for \eqn{1\leq i \leq N}, \eqn{t\in[0,1]}, and the percentile \eqn{\tau \in [0,1]},\cr
 #' where the forecats of conditional standard deviation \eqn{\hat{\sigma}_{i+1}(t)} can be obtained by using \code{\link{est.fArch}}, \code{\link{est.fGarch}}, or \code{\link{est.fGarchx}}. Note that when \eqn{t=1}, \eqn{VaR_{i+1}^\tau(1)} is the forecast of daily VaR.
 #'
-#' @seealso \code{\link{basis.est}} \code{\link{est.fGarch}} \code{\link{diagnostic.fGarch}}
+#' @seealso \code{\link{basis.est}} \code{\link{est.fGarch}} \code{\link{diagnostic.fGarch}} \code{\link{var.backtest}} \code{\link{var.vio}}
 #' @examples
 #' # generate discrete evaluations of the FGARCH(1,1) process.
 #' grid_point = 50; N = 200
@@ -153,7 +153,7 @@ var.forecast <- function(yd,sigma_pred,error_fit,quantile_v,Method){
 #' \eqn{Z_i^\tau(t)=I(x_i(t)<\widehat{VaR}_i^\tau(t))}, for \eqn{1\leq i \leq N}, \eqn{t\in[0,1]}, and \eqn{\tau \in [0,1]},\cr
 #' where \eqn{I(\cdot)} is an indicator function.
 #'
-#' @seealso \code{\link{var.forecast}}
+#' @seealso \code{\link{var.forecast}} \code{\link{var.backtest}}
 #'
 #' @references
 #' Rice, G., Wirjanto, T., Zhao, Y. (2020). Forecasting Value at Risk via intra-Day return curves. International Journal of Forecasting.
@@ -194,7 +194,7 @@ var.vio <- function(yd,var_curve){
 #' \eqn{V_{N,K}=N\sum_{h=1}^K||\hat{\gamma}_{h,Z}||^2}, \cr
 #' where \eqn{K} is a pre-set maximum lag length, and the autocovariance function \eqn{\hat{\gamma}_{h,Z}(t,s)=\frac{1}{N}\sum_{i=1}^{N-h}[Z_i(t)-\bar{Z}_i(t)][Z_{i+h}(s)-\bar{Z}(s)]}, for \eqn{||\cdot ||} is the \eqn{L^2} norm, and \eqn{\bar{Z}(t)=1/N\sum_{i=1}^N Z_i(t)}.
 #'
-#' @seealso \code{\link{var.forecast}}
+#' @seealso \code{\link{var.forecast}} \code{\link{var.vio}}
 #'
 #' @examples
 #' # generate discrete evaluations of the FGARCH(1,1) process.

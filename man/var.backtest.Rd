@@ -70,5 +70,5 @@ Kokoszka, P., Rice, G., Shang, H. L. (2017). Inference for the autocovariance of
 Rice, G., Wirjanto, T., Zhao, Y. (2020). Forecasting Value at Risk via intra-Day return curves. International Journal of Forecasting.
 }
 \seealso{
-\code{\link{var.forecast}}
+\code{\link{var.forecast}} \code{\link{var.vio}}
 }
