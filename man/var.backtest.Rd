@@ -56,10 +56,10 @@ var_obj = var.forecast(yd, sigma_fit, error_fit, quantile_v=0.01, Method="normal
 intra_var = var_obj$intraday_VaR
 
 # get the violation curves.
-intra_vio = var_obj$vio_seq
+intra_vio = var.vio(yd,intra_var)
 
 # backtesting the Unbiasedness Hypothesis for the violation curve.
-pvalues = var.backtest(vio=intra_vio, tau=0.01)
+pvalues = var.backtest(vio=intra_vio, tau=0.01, K=10)
 pvalues$unbias
 pvalues$independent
 

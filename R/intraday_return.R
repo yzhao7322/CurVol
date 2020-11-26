@@ -126,7 +126,7 @@ basis.est <- function(yd, M, type){
            for(j in 1:10){indi_basis=eval.fd(times,eigen_functs[j])
            indi_basis[indi_basis<0]<-0
            ortho_basis_matrix[,j]=indi_basis}
-           basis1 = ortho_basis_matrix
+           basis1 = ortho_basis_matrix[,1:M]
          },
          fsnn = {
            times = rep(0,grid_point)
@@ -221,7 +221,7 @@ basis.est <- function(yd, M, type){
            tve=eigen_v/sum(eigen_v)
            ortho_basis_matrix=matrix(0,nrow=grid_point,ncol=10)
            for(j in 1:10){ortho_basis_matrix[,j]=eval.fd(times,eigen_functs[j])}
-           basis1 = ortho_basis_matrix
+           basis1 = ortho_basis_matrix[,1:M]
          },
          tpf = {
            # the regularization parameter (tuning parameter)

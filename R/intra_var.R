@@ -39,7 +39,7 @@
 #' garch11_est = est.fGarch(fd, basis_est[,1])
 #' diag_garch = diagnostic.fGarch(garch11_est, basis_est[,1], yd)
 #'
-#' # get the in-sample fitting of conditional variance.
+#' # get the in-sample fitted conditional variance and error.
 #' sigma_fit = diag_garch$sigma2[,1:N]
 #' error_fit = diag_garch$eps
 #'
@@ -49,8 +49,6 @@
 #' # the intra-day VaR curves.
 #' var_obj$intraday_VaR
 #'
-#' # the violation process.
-#' var_obj$vio_seq
 #'
 #' @references
 #' Rice, G., Wirjanto, T., Zhao, Y. (2020). Forecasting Value at Risk via intra-Day return curves. International Journal of Forecasting.
@@ -136,15 +134,41 @@ var.forecast <- function(yd,sigma_pred,error_fit,quantile_v,Method){
          stop("Enter something to switch me!")
   )
 
+  return(list(day_VaR = daily_var, day_ES = daily_es, intraday_VaR = var_curves))
+}
+
+
+#' Violation Process
+#'
+#' @description var.vio function returns a violation curve for the intra-day VaR curves.
+#'
+#' @param yd A (grid_point) x (number of observations) matrix drawn from N functional curves.
+#' @param var_curve A (grid_point) x (number of observations) matrix storing the forecasts of intra-day VaR curves.
+#'
+#' @return A violation process of the intra-day return curves based on the forecasts of intra-day VaR curves.
+#' @export
+#'
+#' @details
+#' Given the intra-day return curves \eqn{x_i(t)}, and the forecasts of intra-day VaR curves \eqn{\widehat{VaR}_i^\tau(t)} obtained from \code{\link{var.forecast}}, the violation process \eqn{Z_i^\tau(t)} can be defined as, \cr
+#' \eqn{Z_i^\tau(t)=I(x_i(t)<\widehat{VaR}_i^\tau(t))}, for \eqn{1\leq i \leq N}, \eqn{t\in[0,1]}, and \eqn{\tau \in [0,1]},\cr
+#' where \eqn{I(\cdot)} is an indicator function.
+#'
+#' @seealso \code{\link{var.forecast}}
+#'
+#' @references
+#' Rice, G., Wirjanto, T., Zhao, Y. (2020). Forecasting Value at Risk via intra-Day return curves. International Journal of Forecasting.
+var.vio <- function(yd,var_curve){
+  if( ncol(yd)!=ncol(var_curve) ) warning('the number of observations must match for calculating the violation process!')
+  point_grid=nrow(yd)
   n=ncol(yd)
   y_vio=matrix(0,point_grid,n)
   for (i in 1:n){
-    ind=as.matrix(yd)[,i]<as.matrix(var_curves)[,i]
+    ind=as.matrix(yd)[,i]<as.matrix(var_curve)[,i]
     y_vio[ind,i]=1
   }
-
-  return(list(day_VaR = daily_var, day_ES = daily_es, intraday_VaR = var_curves, vio_seq = y_vio))
+  return(y_vio)
 }
+
 
 
 #' Backtest Intra-day VaR forecasts
@@ -195,10 +219,10 @@ var.forecast <- function(yd,sigma_pred,error_fit,quantile_v,Method){
 #' intra_var = var_obj$intraday_VaR
 #'
 #' # get the violation curves.
-#' intra_vio = var_obj$vio_seq
+#' intra_vio = var.vio(yd,intra_var)
 #'
 #' # backtesting the Unbiasedness Hypothesis for the violation curve.
-#' pvalues = var.backtest(vio=intra_vio, tau=0.01)
+#' pvalues = var.backtest(vio=intra_vio, tau=0.01, K=10)
 #' pvalues$unbias
 #' pvalues$independent
 #'
