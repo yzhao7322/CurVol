@@ -23,6 +23,7 @@
 #' @seealso \code{\link{est.fGarch}} \code{\link{est.fGarchx}} \code{\link{diagnostic.fGarch}}
 #'
 #' @examples
+#' \dontrun{
 #' # generate discrete evaluations of the FARCH process and smooth them into a functional data object.
 #' yd = dgp.fgarch(grid_point=50, N=200, "arch")
 #' yd = yd$garch_mat
@@ -33,7 +34,7 @@
 #'
 #' # estimate an FARCH(1) model with basis when M=1.
 #' arch1_est = est.fArch(fd, basis_est[,1])
-#'
+#' }
 #' @references
 #' Aue, A., Horvath, L., F. Pellatt, D. (2017). Functional generalized autoregressive conditional heteroskedasticity. Journal of Time Series Analysis, 38(1), 3-21.\cr
 #' Cerovecki, C., Francq, C., Hormann, S., Zakoian, J. M. (2019). Functional GARCH models: The quasi-likelihood approach and its applications. Journal of Econometrics, 209(2), 353-375.\cr
@@ -214,6 +215,7 @@ est.fArch=function(fdata, basis, q=1){
 #' @seealso \code{\link{est.fArch}} \code{\link{est.fGarchx}} \code{\link{diagnostic.fGarch}}
 #'
 #' @examples
+#' \dontrun{
 #' # generate discrete evaluations of the FGARCH process and smooth them into a functional data object.
 #' yd = dgp.fgarch(grid_point=50, N=200, "garch")
 #' yd = yd$garch_mat
@@ -224,7 +226,7 @@ est.fArch=function(fdata, basis, q=1){
 #'
 #' # estimate an FGARCH(1,1) model with basis when M=1.
 #' garch11_est = est.fGarch(fd, basis_est[,1])
-#'
+#' }
 est.fGarch=function(fdata, basis, p=1, q=1){
   max_eval=10000
 
@@ -422,6 +424,7 @@ est.fGarch=function(fdata, basis, p=1, q=1){
 #' @seealso \code{\link{est.fArch}} \code{\link{est.fGarch}} \code{\link{diagnostic.fGarch}}
 #'
 #' @examples
+#' \dontrun{
 #' # generate discrete evaluations and smooth them into functional data objects.
 #' yd = dgp.fgarch(grid_point=50, N=200, "arch")
 #' yd = yd$garch_mat
@@ -435,7 +438,7 @@ est.fGarch=function(fdata, basis, p=1, q=1){
 #'
 #' # estimate an FGARCH-X model with basis when M=1.
 #' garchx_est = est.fGarchx(fdy, fdx, basis_est[,1])
-#'
+#' }
 #' @references
 #' Cerovecki, C., Francq, C., Hormann, S., Zakoian, J. M. (2019). Functional GARCH models: The quasi-likelihood approach and its applications. Journal of econometrics, 209(2), 353-375.\cr
 #' Rice, G., Wirjanto, T., Zhao, Y. (2020). Functional GARCH-X Model with an Application to Forecasting Crude Oil Return Curves. Working paper.
@@ -637,6 +640,7 @@ est.fGarchx=function(fdata_y, fdata_x, basis){
 #' @seealso \code{\link{est.fArch}} \code{\link{est.fGarch}} \code{\link{est.fGarchx}} \code{\link{gof.fgarch}}
 #'
 #' @examples
+#' \dontrun{
 #' # generate discrete evaluations of the FGARCH process and smooth them into a functional data object.
 #' yd = dgp.fgarch(grid_point=50, N=200, "garch")
 #' yd = yd$garch_mat
@@ -650,7 +654,7 @@ est.fGarchx=function(fdata_y, fdata_x, basis){
 #'
 #' # get parameters for diagnostic checking.
 #' diag_arch  = diagnostic.fGarch(arch_est, basis_est, yd)
-#'
+#' }
 #' @references
 #' Rice, G., Wirjanto, T., Zhao, Y. (2020). Tests for conditional heteroscedasticity of functional data. Journal of Time Series Analysis.
 diagnostic.fGarch=function(params,basis,yd,p=0,q=1,xd=NULL){

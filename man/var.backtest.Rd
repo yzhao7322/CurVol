@@ -34,6 +34,7 @@ Given the violation process \eqn{Z_i^\tau(t)} at the quantile \eqn{\tau}, the fu
 where \eqn{K} is a pre-set maximum lag length, and the autocovariance function \eqn{\hat{\gamma}_{h,Z}(t,s)=\frac{1}{N}\sum_{i=1}^{N-h}[Z_i(t)-\bar{Z}_i(t)][Z_{i+h}(s)-\bar{Z}(s)]}, for \eqn{||\cdot ||} is the \eqn{L^2} norm, and \eqn{\bar{Z}(t)=1/N\sum_{i=1}^N Z_i(t)}.
 }
 \examples{
+\dontrun{
 # generate discrete evaluations of the FGARCH(1,1) process.
 grid_point = 50; N = 200
 yd = dgp.fgarch(grid_point, N, "garch")
@@ -62,7 +63,7 @@ intra_vio = var.vio(yd,intra_var)
 pvalues = var.backtest(vio=intra_vio, tau=0.01, K=10)
 pvalues$unbias
 pvalues$independent
-
+}
 }
 \references{
 Christoffersen, P. (2010). Backtesting. Encyclopedia of Quantitative Finance, Wiley. \cr

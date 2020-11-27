@@ -18,6 +18,7 @@
 #' Overnight cumulative intra-day log returns: \eqn{x_i(t)=\log P_i(t) - \log P_{i-1}(1)}.
 #'
 #' @examples
+#' \dontrun{
 #' # generate intra-day price curve data for the FGARCH process.
 #' yd = dgp.fgarch(50, 100, "garch")
 #' yd = yd$garch_mat
@@ -27,6 +28,7 @@
 #' idr = fcurve$idr
 #' cidr = fcurve$cidr
 #' ocidr = fcurve$ocidr
+#' }
 #'
 #' @references
 #' Gabrys, R., Horvath, L., Kokoszka, P. (2010). Tests for error correlation in the functional linear model. Journal of the American Statistical Association, 105(491), 1113-1125.\cr
@@ -82,6 +84,7 @@ intra.return <- function(yd){
 #' @importFrom QZ qz.geigen
 #'
 #' @examples
+#' \dontrun{
 #' # generate discrete evaluations of the FGARCH process.
 #' yd = dgp.fgarch(50, 100, "garch")
 #' yd = yd$garch_mat
@@ -90,6 +93,7 @@ intra.return <- function(yd){
 #' dt = basis.est(yd, M=1, "tfpca")
 #' tbasis = dt$basis
 #' tve = dt$tve
+#' }
 #'
 #' @references
 #' Cerovecki, C., Francq, C., Hormann, S., Zakoian, J. M. (2019). Functional GARCH models: The quasi-likelihood approach and its applications. Journal of econometrics, 209(2), 353-375.

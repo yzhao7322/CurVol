@@ -28,6 +28,7 @@ Bs: B Matrices, for \eqn{\beta} operators.
 est.fGarch function estimates the Functional GARCH(p,q) model by using the Quasi-Maximum Likelihood Estimation method.
 }
 \examples{
+\dontrun{
 # generate discrete evaluations of the FGARCH process and smooth them into a functional data object.
 yd = dgp.fgarch(grid_point=50, N=200, "garch")
 yd = yd$garch_mat
@@ -38,7 +39,7 @@ basis_est = basis.est(yd, M=2, "tfpca")$basis
 
 # estimate an FGARCH(1,1) model with basis when M=1.
 garch11_est = est.fGarch(fd, basis_est[,1])
-
+}
 }
 \references{
 Aue, A., Horvath, L., and F. Pellatt, D. (2017) Functional Generalized Autoregressive Conditional Heteroskedasticity. Journal of Time Series Analysis, 38(1) 3-21.\cr

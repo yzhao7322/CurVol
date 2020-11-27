@@ -29,6 +29,7 @@ This function estimates the Functional ARCH(q) model:\cr
 \eqn{\sigma_i^2(t)=\omega(t)+ \sum_{j=1}^q \int \alpha_j(t,s) x^2_{i-j}(s)ds}.
 }
 \examples{
+\dontrun{
 # generate discrete evaluations of the FARCH process and smooth them into a functional data object.
 yd = dgp.fgarch(grid_point=50, N=200, "arch")
 yd = yd$garch_mat
@@ -39,7 +40,7 @@ basis_est = basis.est(yd, M=2, "tfpca")$basis
 
 # estimate an FARCH(1) model with basis when M=1.
 arch1_est = est.fArch(fd, basis_est[,1])
-
+}
 }
 \references{
 Aue, A., Horvath, L., F. Pellatt, D. (2017). Functional generalized autoregressive conditional heteroskedasticity. Journal of Time Series Analysis, 38(1), 3-21.\cr

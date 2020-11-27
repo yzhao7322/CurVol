@@ -24,6 +24,7 @@ tve: the total variations explained by data-driven bases, not applied for polyno
 basis.est function generates/estimates non-negative basis functions, so that they can be used to estimate a Functional GARCH model subsequently.
 }
 \examples{
+\dontrun{
 # generate discrete evaluations of the FGARCH process.
 yd = dgp.fgarch(50, 100, "garch")
 yd = yd$garch_mat
@@ -32,6 +33,7 @@ yd = yd$garch_mat
 dt = basis.est(yd, M=1, "tfpca")
 tbasis = dt$basis
 tve = dt$tve
+}
 
 }
 \references{

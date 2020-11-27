@@ -26,6 +26,7 @@
 #'
 #' @seealso \code{\link{basis.est}} \code{\link{est.fGarch}} \code{\link{diagnostic.fGarch}} \code{\link{var.backtest}} \code{\link{var.vio}}
 #' @examples
+#' \dontrun{
 #' # generate discrete evaluations of the FGARCH(1,1) process.
 #' grid_point = 50; N = 200
 #' yd = dgp.fgarch(grid_point, N, "garch")
@@ -48,7 +49,7 @@
 #'
 #' # the intra-day VaR curves.
 #' var_obj$intraday_VaR
-#'
+#' }
 #'
 #' @references
 #' Rice, G., Wirjanto, T., Zhao, Y. (2020). Forecasting Value at Risk via intra-Day return curves. International Journal of Forecasting.
@@ -197,6 +198,7 @@ var.vio <- function(yd,var_curve){
 #' @seealso \code{\link{var.forecast}} \code{\link{var.vio}}
 #'
 #' @examples
+#' \dontrun{
 #' # generate discrete evaluations of the FGARCH(1,1) process.
 #' grid_point = 50; N = 200
 #' yd = dgp.fgarch(grid_point, N, "garch")
@@ -225,7 +227,7 @@ var.vio <- function(yd,var_curve){
 #' pvalues = var.backtest(vio=intra_vio, tau=0.01, K=10)
 #' pvalues$unbias
 #' pvalues$independent
-#'
+#' }
 #' @references
 #' Christoffersen, P. (2010). Backtesting. Encyclopedia of Quantitative Finance, Wiley. \cr
 #' Kokoszka, P., Rice, G., Shang, H. L. (2017). Inference for the autocovariance of a functional time series under conditional heteroscedasticity. Journal of Multivariate Analysis, 162, 32-50. \cr

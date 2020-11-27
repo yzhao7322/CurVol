@@ -34,6 +34,7 @@ kernel_op: estimated kernel coefficient operators.
 diagnostic.fGarch function provides the estimation parameters that can be used as the inputs for a diagnostic purpose.
 }
 \examples{
+\dontrun{
 # generate discrete evaluations of the FGARCH process and smooth them into a functional data object.
 yd = dgp.fgarch(grid_point=50, N=200, "garch")
 yd = yd$garch_mat
@@ -47,7 +48,7 @@ arch_est = est.fArch(fdy, basis_est)
 
 # get parameters for diagnostic checking.
 diag_arch  = diagnostic.fGarch(arch_est, basis_est, yd)
-
+}
 }
 \references{
 Rice, G., Wirjanto, T., Zhao, Y. (2020). Tests for conditional heteroscedasticity of functional data. Journal of Time Series Analysis.

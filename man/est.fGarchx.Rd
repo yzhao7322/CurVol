@@ -34,6 +34,7 @@ This function estimates the Functional GARCH-X model:\cr
 where \eqn{x_i(t)} is an exogenous variable.
 }
 \examples{
+\dontrun{
 # generate discrete evaluations and smooth them into functional data objects.
 yd = dgp.fgarch(grid_point=50, N=200, "arch")
 yd = yd$garch_mat
@@ -47,7 +48,7 @@ basis_est = basis.est(yd, M=2, "tfpca")$basis
 
 # estimate an FGARCH-X model with basis when M=1.
 garchx_est = est.fGarchx(fdy, fdx, basis_est[,1])
-
+}
 }
 \references{
 Cerovecki, C., Francq, C., Hormann, S., Zakoian, J. M. (2019). Functional GARCH models: The quasi-likelihood approach and its applications. Journal of econometrics, 209(2), 353-375.\cr

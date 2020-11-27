@@ -37,6 +37,7 @@ This function uses a two-step approach to forecast intra-day Value-at-Risk, in f
 where the forecats of conditional standard deviation \eqn{\hat{\sigma}_{i+1}(t)} can be obtained by using \code{\link{est.fArch}}, \code{\link{est.fGarch}}, or \code{\link{est.fGarchx}}. Note that when \eqn{t=1}, \eqn{VaR_{i+1}^\tau(1)} is the forecast of daily VaR.
 }
 \examples{
+\dontrun{
 # generate discrete evaluations of the FGARCH(1,1) process.
 grid_point = 50; N = 200
 yd = dgp.fgarch(grid_point, N, "garch")
@@ -59,7 +60,7 @@ var_obj = var.forecast(yd, sigma_fit, error_fit, quantile_v=0.01, Method="normal
 
 # the intra-day VaR curves.
 var_obj$intraday_VaR
-
+}
 
 }
 \references{
