@@ -140,7 +140,7 @@ var.forecast <- function(yd,sigma_pred,error_fit,quantile_v,Method){
 
 #' Violation Process
 #'
-#' @description var.vio function returns a violation curve for the intra-day VaR curves.
+#' @description var.vio function returns a violation process for the intra-day VaR curves.
 #'
 #' @param yd A (grid_point) x (number of observations) matrix drawn from N functional curves.
 #' @param var_curve A (grid_point) x (number of observations) matrix storing the forecasts of intra-day VaR curves.

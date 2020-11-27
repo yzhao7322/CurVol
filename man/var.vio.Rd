@@ -15,7 +15,7 @@ var.vio(yd, var_curve)
 A violation process of the intra-day return curves based on the forecasts of intra-day VaR curves.
 }
 \description{
-var.vio function returns a violation curve for the intra-day VaR curves.
+var.vio function returns a violation process for the intra-day VaR curves.
 }
 \details{
 Given the intra-day return curves \eqn{x_i(t)}, and the forecasts of intra-day VaR curves \eqn{\widehat{VaR}_i^\tau(t)} obtained from \code{\link{var.forecast}}, the violation process \eqn{Z_i^\tau(t)} can be defined as, \cr
