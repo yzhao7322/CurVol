@@ -53,7 +53,7 @@ install.packages("CurVol")
 
 ## R topics documented
 
-1. backtest.var - backtest the intra-day VaR forecasts
+1. backtest.var - backtest the intra-day VaR forecasts.
 2. basis.est - estimate non-negative basis functions.
 3. dgp.fgarch - generate functional data following the functional
     ARCH(1) or GARCH(1,1) process.
