@@ -1,7 +1,7 @@
 Package: CurVol
 Type: Package
 Title: Curve Data Volatility Analysis
-Version: 0.1.0
+Version: 1.0.0
 Author: Kelly Ramsay, Gregory Rice, Tony Wirjanto, Yuqian Zhao
 Maintainer: Yuqian Zhao <y.zhao@essex.ac.uk>
 Description: The CurVol package provides useful functions to analyze the conditional volatility of functional time series data. These procedures enable data generating processes, functional GARCH-type model estimation, goodness-of-fit tests, and backtesting methods. 
