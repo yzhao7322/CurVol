@@ -16,13 +16,12 @@
 #'
 #' @seealso \code{\link{dgp.fgarch}}
 #' @examples
-#' \dontrun{
 #' # generate discrete evaluations of 100 iid curves that each curve is realized on 50 grid points.
 #' yd_iid = dgp.fiid(50, 100)
 #'
 #' # smooth discrete data into functional curves.
 #' fd = fda::Data2fd(argvals=seq(0,1,len = 50),y=yd_iid,fda::create.bspline.basis(nbasis = 32))
-#' }
+#'
 dgp.fiid <- function(grid_point, N){
   times=1:grid_point/grid_point
   # control the covariance structure
@@ -68,18 +67,16 @@ dgp.fiid <- function(grid_point, N){
 #'
 #' @seealso \code{\link{dgp.fiid}}
 #' @examples
-#' \dontrun{
 #' # generate discrete evaluations of 100 FARCH curves that each curve is realized on 50 grid points.
 #' yd = dgp.fgarch(50, 100, "garch")
 #' yd_garch = yd$garch_mat
 #'
 #' # smooth discrete data into functional curves.
 #' fd = fda::Data2fd(argvals=seq(0,1,len=50),y=yd_garch,fda::create.bspline.basis(nbasis=32))
-#' }
 #'
 #' @references
-#' Hormann, S., Horvath, L., Reeder, R. (2013). A functional version of the ARCH model. Econometric Theory, 29(2), 267-288.
-#' Aue, A., Horvath, L., F. Pellatt, D. (2017). Functional generalized autoregressive conditional heteroskedasticity. Journal of Time Series Analysis, 38(1), 3-21.
+#' Hormann, S., Horvath, L., Reeder, R. (2013). A functional version of the ARCH model. Econometric Theory. 29(2), 267-288. <doi:10.1017/S0266466612000345>.
+#' Aue, A., Horvath, L., F. Pellatt, D. (2017). Functional generalized autoregressive conditional heteroskedasticity. Journal of Time Series Analysis. 38(1), 3-21. <doi:10.1111/jtsa.12192>.
 #'
 dgp.fgarch <- function(grid_point, N, type, alpha_par=NULL, beta_par=NULL){
   times = 1:grid_point/grid_point
@@ -167,7 +164,6 @@ dgp.fgarch <- function(grid_point, N, type, alpha_par=NULL, beta_par=NULL){
 #'
 #' @seealso \code{\link{intra.return}}
 #' @examples
-#' \dontrun{
 #' # load the data
 #' yd = as.matrix(sample_data)
 #' grid_point = dim(yd)[1]
@@ -175,5 +171,5 @@ dgp.fgarch <- function(grid_point, N, type, alpha_par=NULL, beta_par=NULL){
 #'
 #' # smooth data into functional objects by using B-spline bases.
 #' fd = fda::Data2fd(y=yd, argvals=seq(0,1,len = grid_point), fda::create.bspline.basis(nbasis = 32))
-#' }
+#'
 "sample_data"

@@ -4,7 +4,7 @@ Title: Curve Data Volatility Analysis
 Version: 1.0.0
 Author: Kelly Ramsay, Gregory Rice, Tony Wirjanto, Yuqian Zhao
 Maintainer: Yuqian Zhao <y.zhao@essex.ac.uk>
-Description: The CurVol package provides useful functions to analyze the conditional volatility of functional time series data. These procedures enable data generating processes, functional GARCH-type model estimation, goodness-of-fit tests, and backtesting methods. 
+Description: Functional time series data derived from financial markets exhibit conditional heteroscedasticity. Tests and models have been developed to depicit this property. These procedures enable data generating processes, functional GARCH-type model estimation, goodness-of-fit tests, and backtesting methods in a series of papers by Hormann et al., (2013, <doi:10.1017/S0266466612000345>), Aue et al., (2017, <doi:10.1111/jtsa.12192>), Cerovecki et al., (2019, <doi:10.1016/j.jeconom.2019.01.006>), Rice et al., (2020, <doi:10.1111/jtsa.12532>), Rice et al., (2020, <doi:10.1016/j.ijforecast.2019.10.006>). 
 License: GPL-3
 Encoding: UTF-8
 Depends: R (>= 3.5.0)

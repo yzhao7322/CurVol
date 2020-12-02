@@ -51,7 +51,7 @@ diag_arch  = diagnostic.fGarch(arch_est, basis_est, yd)
 }
 }
 \references{
-Rice, G., Wirjanto, T., Zhao, Y. (2020). Tests for conditional heteroscedasticity of functional data. Journal of Time Series Analysis.
+Rice, G., Wirjanto, T., Zhao, Y. (2020) Forecasting Value at Risk via intra-day return curves. International Journal of Forecasting. <doi:10.1016/j.ijforecast.2019.10.006>.
 }
 \seealso{
 \code{\link{est.fArch}} \code{\link{est.fGarch}} \code{\link{est.fGarchx}} \code{\link{gof.fgarch}}

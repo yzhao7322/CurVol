@@ -28,7 +28,6 @@ Cumulative intra-day log returns: \eqn{X_i(t)=\log P_i(t) - \log P_i(0)};
 Overnight cumulative intra-day log returns: \eqn{x_i(t)=\log P_i(t) - \log P_{i-1}(1)}.
 }
 \examples{
-\dontrun{
 # generate intra-day price curve data for the FGARCH process.
 yd = dgp.fgarch(50, 100, "garch")
 yd = yd$garch_mat
@@ -38,10 +37,9 @@ fcurve = intra.return(yd)
 idr = fcurve$idr
 cidr = fcurve$cidr
 ocidr = fcurve$ocidr
-}
 
 }
 \references{
-Gabrys, R., Horvath, L., Kokoszka, P. (2010). Tests for error correlation in the functional linear model. Journal of the American Statistical Association, 105(491), 1113-1125.\cr
-Rice, G., Wirjanto, T., Zhao, Y. (2020). Forecasting Value at Risk via Intra-Day Return Curves. International Journal of Forecasting.
+Gabrys, R., Horvath, L., Kokoszka, P. (2010). Tests for error correlation in the functional linear model. Journal of the American Statistical Association, 105(491), 1113-1125. <doi:10.1198/jasa.2010.tm09794>.
+Rice, G., Wirjanto, T., Zhao, Y. (2020). Forecasting Value at Risk via Intra-Day Return Curves. International Journal of Forecasting. <doi:10.1016/j.ijforecast.2019.10.006>.
 }

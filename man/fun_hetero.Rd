@@ -33,16 +33,15 @@ the norm-based statistic: \eqn{V_{N,K}=N\sum_{h=1}^K\hat{\rho}_h^2}, where \eqn{
 the fully functional statistic \eqn{M_{N,K}=N\sum_{h=1}^K||\hat{\gamma}_h||^2}, where the autocovariance kernel \eqn{\hat{\gamma}_{h}(t,s)=\frac{1}{N}\sum_{i=1}^{N-h}[x_i^2(t)-\bar{x}^2(t)][x^2_{i+h}(s)-\bar{x}(s)]}, for \eqn{||\cdot ||} is the \eqn{L^2} norm, and \eqn{\bar{x}(t)=1/N\sum_{i=1}^N x^2_i(t)}.
 }
 \examples{
-\dontrun{
 # generate discrete evaluations of the iid curves under the null hypothesis.
 yd = dgp.fiid(50, 100)
 
 # test the conditional heteroscedasticity.
 fun_hetero(yd, K=5, "functional")
-}
+
 }
 \references{
-Rice, G., Wirjanto, T., Zhao, Y. (2020). Tests for conditional heteroscedasticity of functional data. Journal of Time Series Analysis, 41(6), 733-758.
+Rice, G., Wirjanto, T., Zhao, Y. (2020). Tests for conditional heteroscedasticity of functional data. Journal of Time Series Analysis. 41(6), 733-758. <doi:10.1111/jtsa.12532>.
 }
 \seealso{
 \code{\link{sample_data}}

@@ -36,9 +36,9 @@
 #' arch1_est = est.fArch(fd, basis_est[,1])
 #' }
 #' @references
-#' Aue, A., Horvath, L., F. Pellatt, D. (2017). Functional generalized autoregressive conditional heteroskedasticity. Journal of Time Series Analysis, 38(1), 3-21.\cr
-#' Cerovecki, C., Francq, C., Hormann, S., Zakoian, J. M. (2019). Functional GARCH models: The quasi-likelihood approach and its applications. Journal of Econometrics, 209(2), 353-375.\cr
-#' Hormann, S., Horvath, L., Reeder, R. (2013). A functional version of the ARCH model. Econometric Theory, 29(2), 267-288.
+#' Aue, A., Horvath, L., F. Pellatt, D. (2017). Functional generalized autoregressive conditional heteroskedasticity. Journal of Time Series Analysis. 38(1), 3-21. <doi:10.1111/jtsa.12192>.
+#' Cerovecki, C., Francq, C., Hormann, S., Zakoian, J. M. (2019). Functional GARCH models: The quasi-likelihood approach and its applications. Journal of Econometrics. 209(2), 353-375. <doi:10.1016/j.jeconom.2019.01.006>.
+#' Hormann, S., Horvath, L., Reeder, R. (2013). A functional version of the ARCH model. Econometric Theory. 29(2), 267-288. <doi:10.1017/S0266466612000345>.
 est.fArch=function(fdata, basis, q=1){
   max_eval=10000
 
@@ -202,8 +202,8 @@ est.fArch=function(fdata, basis, q=1){
 #' @return Bs: B Matrices, for \eqn{\beta} operators.
 #'
 #' @references
-#' Aue, A., Horvath, L., and F. Pellatt, D. (2017) Functional Generalized Autoregressive Conditional Heteroskedasticity. Journal of Time Series Analysis, 38(1) 3-21.\cr
-#' Cerovecki, C., Francq, C., Hormann, S., Zakoian, J.M. (2019). Functional GARCH models: The quasi-likelihood approach and its applications. Journal of Econometrics, 209(2), pages 353-375.
+#' Aue, A., Horvath, L., F. Pellatt, D. (2017). Functional generalized autoregressive conditional heteroskedasticity. Journal of Time Series Analysis. 38(1), 3-21. <doi:10.1111/jtsa.12192>.
+#' Cerovecki, C., Francq, C., Hormann, S., Zakoian, J. M. (2019). Functional GARCH models: The quasi-likelihood approach and its applications. Journal of Econometrics. 209(2), 353-375. <doi:10.1016/j.jeconom.2019.01.006>.
 #'
 #' @export
 #'
@@ -439,9 +439,7 @@ est.fGarch=function(fdata, basis, p=1, q=1){
 #' # estimate an FGARCH-X model with basis when M=1.
 #' garchx_est = est.fGarchx(fdy, fdx, basis_est[,1])
 #' }
-#' @references
-#' Cerovecki, C., Francq, C., Hormann, S., Zakoian, J. M. (2019). Functional GARCH models: The quasi-likelihood approach and its applications. Journal of econometrics, 209(2), 353-375.\cr
-#' Rice, G., Wirjanto, T., Zhao, Y. (2020). Functional GARCH-X Model with an Application to Forecasting Crude Oil Return Curves. Working paper.
+#'
 est.fGarchx=function(fdata_y, fdata_x, basis){
   max_eval=10000
   ## projecting the squared process onto given basis functions to get functional scores.
@@ -656,7 +654,8 @@ est.fGarchx=function(fdata_y, fdata_x, basis){
 #' diag_arch  = diagnostic.fGarch(arch_est, basis_est, yd)
 #' }
 #' @references
-#' Rice, G., Wirjanto, T., Zhao, Y. (2020). Tests for conditional heteroscedasticity of functional data. Journal of Time Series Analysis.
+#' Rice, G., Wirjanto, T., Zhao, Y. (2020) Forecasting Value at Risk via intra-day return curves. International Journal of Forecasting. <doi:10.1016/j.ijforecast.2019.10.006>.
+#'
 diagnostic.fGarch=function(params,basis,yd,p=0,q=1,xd=NULL){
   grid_point = nrow(yd)
   N=ncol(yd)

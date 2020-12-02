@@ -38,19 +38,17 @@ If \eqn{x_i(t)} follows an FGARCH(1,1) process,\cr
 where the innovation \eqn{\varepsilon_i(t)} follows an Ornstein–Uhlenbeck process \code{\link{dgp.fiid}}, and the constant coefficient \eqn{\omega(t)=0.1t(1-t)}.
 }
 \examples{
-\dontrun{
 # generate discrete evaluations of 100 FARCH curves that each curve is realized on 50 grid points.
 yd = dgp.fgarch(50, 100, "garch")
 yd_garch = yd$garch_mat
 
 # smooth discrete data into functional curves.
 fd = fda::Data2fd(argvals=seq(0,1,len=50),y=yd_garch,fda::create.bspline.basis(nbasis=32))
-}
 
 }
 \references{
-Hormann, S., Horvath, L., Reeder, R. (2013). A functional version of the ARCH model. Econometric Theory, 29(2), 267-288.
-Aue, A., Horvath, L., F. Pellatt, D. (2017). Functional generalized autoregressive conditional heteroskedasticity. Journal of Time Series Analysis, 38(1), 3-21.
+Hormann, S., Horvath, L., Reeder, R. (2013). A functional version of the ARCH model. Econometric Theory. 29(2), 267-288. <doi:10.1017/S0266466612000345>.
+Aue, A., Horvath, L., F. Pellatt, D. (2017). Functional generalized autoregressive conditional heteroskedasticity. Journal of Time Series Analysis. 38(1), 3-21. <doi:10.1111/jtsa.12192>.
 }
 \seealso{
 \code{\link{dgp.fiid}}

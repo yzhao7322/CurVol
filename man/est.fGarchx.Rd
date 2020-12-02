@@ -49,10 +49,7 @@ basis_est = basis.est(yd, M=2, "tfpca")$basis
 # estimate an FGARCH-X model with basis when M=1.
 garchx_est = est.fGarchx(fdy, fdx, basis_est[,1])
 }
-}
-\references{
-Cerovecki, C., Francq, C., Hormann, S., Zakoian, J. M. (2019). Functional GARCH models: The quasi-likelihood approach and its applications. Journal of econometrics, 209(2), 353-375.\cr
-Rice, G., Wirjanto, T., Zhao, Y. (2020). Functional GARCH-X Model with an Application to Forecasting Crude Oil Return Curves. Working paper.
+
 }
 \seealso{
 \code{\link{est.fArch}} \code{\link{est.fGarch}} \code{\link{diagnostic.fGarch}}

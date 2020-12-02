@@ -22,13 +22,12 @@ dgp.fiid function generates iid functional curve data following the Ornstein–U
 where \eqn{W_i(t)} is a standard Brownian Motion.
 }
 \examples{
-\dontrun{
 # generate discrete evaluations of 100 iid curves that each curve is realized on 50 grid points.
 yd_iid = dgp.fiid(50, 100)
 
 # smooth discrete data into functional curves.
 fd = fda::Data2fd(argvals=seq(0,1,len = 50),y=yd_iid,fda::create.bspline.basis(nbasis = 32))
-}
+
 }
 \seealso{
 \code{\link{dgp.fgarch}}

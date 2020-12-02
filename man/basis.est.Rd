@@ -24,7 +24,6 @@ tve: the total variations explained by data-driven bases, not applied for polyno
 basis.est function generates/estimates non-negative basis functions, so that they can be used to estimate a Functional GARCH model subsequently.
 }
 \examples{
-\dontrun{
 # generate discrete evaluations of the FGARCH process.
 yd = dgp.fgarch(50, 100, "garch")
 yd = yd$garch_mat
@@ -33,10 +32,8 @@ yd = yd$garch_mat
 dt = basis.est(yd, M=1, "tfpca")
 tbasis = dt$basis
 tve = dt$tve
-}
 
 }
 \references{
-Cerovecki, C., Francq, C., Hormann, S., Zakoian, J. M. (2019). Functional GARCH models: The quasi-likelihood approach and its applications. Journal of econometrics, 209(2), 353-375.
-Rice, G., Wirjanto, T., Zhao, Y. (2020). Functional GARCH-X model with an application to forecasting crude oil return curves. Working Paper.
+Cerovecki, C., Francq, C., Hormann, S., Zakoian, J. M. (2019). Functional GARCH models: The quasi-likelihood approach and its applications. Journal of Econometrics. 209(2), 353-375. <doi:10.1016/j.jeconom.2019.01.006>.
 }

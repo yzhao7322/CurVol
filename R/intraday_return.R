@@ -18,7 +18,6 @@
 #' Overnight cumulative intra-day log returns: \eqn{x_i(t)=\log P_i(t) - \log P_{i-1}(1)}.
 #'
 #' @examples
-#' \dontrun{
 #' # generate intra-day price curve data for the FGARCH process.
 #' yd = dgp.fgarch(50, 100, "garch")
 #' yd = yd$garch_mat
@@ -28,11 +27,10 @@
 #' idr = fcurve$idr
 #' cidr = fcurve$cidr
 #' ocidr = fcurve$ocidr
-#' }
 #'
 #' @references
-#' Gabrys, R., Horvath, L., Kokoszka, P. (2010). Tests for error correlation in the functional linear model. Journal of the American Statistical Association, 105(491), 1113-1125.\cr
-#' Rice, G., Wirjanto, T., Zhao, Y. (2020). Forecasting Value at Risk via Intra-Day Return Curves. International Journal of Forecasting.
+#' Gabrys, R., Horvath, L., Kokoszka, P. (2010). Tests for error correlation in the functional linear model. Journal of the American Statistical Association, 105(491), 1113-1125. <doi:10.1198/jasa.2010.tm09794>.
+#' Rice, G., Wirjanto, T., Zhao, Y. (2020). Forecasting Value at Risk via Intra-Day Return Curves. International Journal of Forecasting. <doi:10.1016/j.ijforecast.2019.10.006>.
 intra.return <- function(yd){
   grid_point=nrow(yd)
   N=ncol(yd)
@@ -84,7 +82,6 @@ intra.return <- function(yd){
 #' @importFrom QZ qz.geigen
 #'
 #' @examples
-#' \dontrun{
 #' # generate discrete evaluations of the FGARCH process.
 #' yd = dgp.fgarch(50, 100, "garch")
 #' yd = yd$garch_mat
@@ -93,11 +90,10 @@ intra.return <- function(yd){
 #' dt = basis.est(yd, M=1, "tfpca")
 #' tbasis = dt$basis
 #' tve = dt$tve
-#' }
 #'
 #' @references
-#' Cerovecki, C., Francq, C., Hormann, S., Zakoian, J. M. (2019). Functional GARCH models: The quasi-likelihood approach and its applications. Journal of econometrics, 209(2), 353-375.
-#' Rice, G., Wirjanto, T., Zhao, Y. (2020). Functional GARCH-X model with an application to forecasting crude oil return curves. Working Paper.
+#' Cerovecki, C., Francq, C., Hormann, S., Zakoian, J. M. (2019). Functional GARCH models: The quasi-likelihood approach and its applications. Journal of Econometrics. 209(2), 353-375. <doi:10.1016/j.jeconom.2019.01.006>.
+#'
 basis.est <- function(yd, M, type){
   grid_point=nrow(yd)
   N=ncol(yd)

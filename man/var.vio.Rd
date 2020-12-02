@@ -23,7 +23,7 @@ Given the intra-day return curves \eqn{x_i(t)}, and the forecasts of intra-day V
 where \eqn{I(\cdot)} is an indicator function.
 }
 \references{
-Rice, G., Wirjanto, T., Zhao, Y. (2020). Forecasting Value at Risk via intra-Day return curves. International Journal of Forecasting.
+Rice, G., Wirjanto, T., Zhao, Y. (2020). Forecasting Value at Risk via intra-day return curves. International Journal of Forecasting. <doi:10.1016/j.ijforecast.2019.10.006>.
 }
 \seealso{
 \code{\link{var.forecast}} \code{\link{var.backtest}}
