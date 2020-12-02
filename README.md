@@ -6,10 +6,11 @@
 <!-- badges: start -->
 <!-- badges: end -->
 
-The goal of ‘CurVol’ is to document useful functions to analyze the
-volatility of functional time series data. Methods and tools in this
-package replicate hypothesis testing, model estimation, and backtesting
-in a series of papers:
+Functional time series data derived from financial markets exhibit
+conditional heteroscedasticity. The goal of ‘CurVol’ is to document
+useful functions to analyze the volatility of functional time series
+data. Methods and tools in this package replicate hypothesis testing,
+model estimation, and backtesting in a series of papers:
 
 Hormann, S., Horvath, L., Reeder, R. (2013). A functional version of the
 ARCH model. Econometric Theory. 29(2), 267-288.
