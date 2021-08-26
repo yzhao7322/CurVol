@@ -36,9 +36,9 @@
 #' arch1_est = est.fArch(fd, basis_est[,1])
 #' }
 #' @references
-#' Aue, A., Horvath, L., F. Pellatt, D. (2017). Functional generalized autoregressive conditional heteroskedasticity. Journal of Time Series Analysis. 38(1), 3-21. <doi:10.1111/jtsa.12192>.
-#' Cerovecki, C., Francq, C., Hormann, S., Zakoian, J. M. (2019). Functional GARCH models: The quasi-likelihood approach and its applications. Journal of Econometrics. 209(2), 353-375. <doi:10.1016/j.jeconom.2019.01.006>.
-#' Hormann, S., Horvath, L., Reeder, R. (2013). A functional version of the ARCH model. Econometric Theory. 29(2), 267-288. <doi:10.1017/S0266466612000345>.
+#' Aue, A., Horvath, L., F. Pellatt, D. (2017). Functional generalized autoregressive conditional heteroskedasticity. Journal of Time Series Analysis. 38(1), 3-21. <doi:10.1111/jtsa.12192>.\cr
+#' Cerovecki, C., Francq, C., Hormann, S., Zakoian, J. M. (2019). Functional GARCH models: The quasi-likelihood approach and its applications. Journal of Econometrics. 209(2), 353-375. <doi:10.1016/j.jeconom.2019.01.006>.\cr
+#' Hormann, S., Horvath, L., Reeder, R. (2013). A functional version of the ARCH model. Econometric Theory. 29(2), 267-288. <doi:10.1017/S0266466612000345>.\cr
 est.fArch=function(fdata, basis, q=1){
   max_eval=10000
 
@@ -201,10 +201,6 @@ est.fArch=function(fdata, basis, q=1){
 #' @return As: A Matrices, for \eqn{\alpha} operators.
 #' @return Bs: B Matrices, for \eqn{\beta} operators.
 #'
-#' @references
-#' Aue, A., Horvath, L., F. Pellatt, D. (2017). Functional generalized autoregressive conditional heteroskedasticity. Journal of Time Series Analysis. 38(1), 3-21. <doi:10.1111/jtsa.12192>.
-#' Cerovecki, C., Francq, C., Hormann, S., Zakoian, J. M. (2019). Functional GARCH models: The quasi-likelihood approach and its applications. Journal of Econometrics. 209(2), 353-375. <doi:10.1016/j.jeconom.2019.01.006>.
-#'
 #' @export
 #'
 #' @import stats
@@ -227,6 +223,10 @@ est.fArch=function(fdata, basis, q=1){
 #' # estimate an FGARCH(1,1) model with basis when M=1.
 #' garch11_est = est.fGarch(fd, basis_est[,1])
 #' }
+#'
+#' @references
+#' Aue, A., Horvath, L., F. Pellatt, D. (2017). Functional generalized autoregressive conditional heteroskedasticity. Journal of Time Series Analysis. 38(1), 3-21. <doi:10.1111/jtsa.12192>.\cr
+#' Cerovecki, C., Francq, C., Hormann, S., Zakoian, J. M. (2019). Functional GARCH models: The quasi-likelihood approach and its applications. Journal of Econometrics. 209(2), 353-375. <doi:10.1016/j.jeconom.2019.01.006>.\cr
 est.fGarch=function(fdata, basis, p=1, q=1){
   max_eval=10000
 
@@ -440,6 +440,9 @@ est.fGarch=function(fdata, basis, p=1, q=1){
 #' garchx_est = est.fGarchx(fdy, fdx, basis_est[,1])
 #' }
 #'
+#' @references
+#' Rice, G., Wirjanto, T., Zhao, Y. (2021) Exploring volatility of crude oil intra-day return curves: a functional GARCH-X model. MPRA Paper No. 109231. <https://mpra.ub.uni-muenchen.de/109231>. Cerovecki, C., Francq, C., Hormann, S., Zakoian, J. M. (2019). Functional GARCH models: The quasi-likelihood approach and its applications. Journal of Econometrics. 209(2), 353-375. <doi:10.1016/j.jeconom.2019.01.006>.\cr
+#'
 est.fGarchx=function(fdata_y, fdata_x, basis){
   max_eval=10000
   ## projecting the squared process onto given basis functions to get functional scores.
@@ -615,7 +618,6 @@ est.fGarchx=function(fdata_y, fdata_x, basis){
 
 
 
-
 #' Diagnostic information derived from the estimation
 #'
 #' @description diagnostic.fGarch function provides the estimation parameters that can be used as the inputs for a diagnostic purpose.
@@ -653,8 +655,9 @@ est.fGarchx=function(fdata_y, fdata_x, basis){
 #' # get parameters for diagnostic checking.
 #' diag_arch  = diagnostic.fGarch(arch_est, basis_est, yd)
 #' }
+#'
 #' @references
-#' Rice, G., Wirjanto, T., Zhao, Y. (2020) Forecasting Value at Risk via intra-day return curves. International Journal of Forecasting. <doi:10.1016/j.ijforecast.2019.10.006>.
+#' Rice, G., Wirjanto, T., Zhao, Y. (2020) Forecasting Value at Risk via intra-day return curves. International Journal of Forecasting. <doi:10.1016/j.ijforecast.2019.10.006>.\cr
 #'
 diagnostic.fGarch=function(params,basis,yd,p=0,q=1,xd=NULL){
   grid_point = nrow(yd)

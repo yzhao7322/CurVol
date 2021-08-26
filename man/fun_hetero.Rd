@@ -41,7 +41,7 @@ fun_hetero(yd, K=5, "functional")
 
 }
 \references{
-Rice, G., Wirjanto, T., Zhao, Y. (2020). Tests for conditional heteroscedasticity of functional data. Journal of Time Series Analysis. 41(6), 733-758. <doi:10.1111/jtsa.12532>.
+Rice, G., Wirjanto, T., Zhao, Y. (2020). Tests for conditional heteroscedasticity of functional data. Journal of Time Series Analysis. 41(6), 733-758. <doi:10.1111/jtsa.12532>.\cr
 }
 \seealso{
 \code{\link{sample_data}}

@@ -33,7 +33,7 @@
 #' fun_hetero(yd, K=5, "functional")
 #'
 #' @references
-#' Rice, G., Wirjanto, T., Zhao, Y. (2020). Tests for conditional heteroscedasticity of functional data. Journal of Time Series Analysis. 41(6), 733-758. <doi:10.1111/jtsa.12532>.
+#' Rice, G., Wirjanto, T., Zhao, Y. (2020). Tests for conditional heteroscedasticity of functional data. Journal of Time Series Analysis. 41(6), 733-758. <doi:10.1111/jtsa.12532>.\cr
 fun_hetero <- function (yd, K=NULL, stat_Method, pplot=NULL){
 
   if(is.null(K) == TRUE) {
@@ -242,8 +242,8 @@ fun_hetero <- function (yd, K=NULL, stat_Method, pplot=NULL){
 #' gof.fgarch(yd, basis_est[,1], "arch", K=5)
 #' }
 #' @references
-#' Aue, A., Horvath, L., F. Pellatt, D. (2017). Functional generalized autoregressive conditional heteroskedasticity. Journal of Time Series Analysis. 38(1), 3-21. <doi:10.1111/jtsa.12192>.
-#' Rice, G., Wirjanto, T., Zhao, Y. (2020). Tests for conditional heteroscedasticity of functional data. Journal of Time Series Analysis. 41(6), 733-758. <doi:10.1111/jtsa.12532>.
+#' Aue, A., Horvath, L., F. Pellatt, D. (2017). Functional generalized autoregressive conditional heteroskedasticity. Journal of Time Series Analysis. 38(1), 3-21. <doi:10.1111/jtsa.12192>.\cr
+#' Rice, G., Wirjanto, T., Zhao, Y. (2020). Tests for conditional heteroscedasticity of functional data. Journal of Time Series Analysis. 41(6), 733-758. <doi:10.1111/jtsa.12532>.\cr
 #'
 gof.fgarch <- function (yd, basis, model, K=NULL, pplot=NULL, max_eval=10000){
 

@@ -49,9 +49,10 @@ arch_est = est.fArch(fdy, basis_est)
 # get parameters for diagnostic checking.
 diag_arch  = diagnostic.fGarch(arch_est, basis_est, yd)
 }
+
 }
 \references{
-Rice, G., Wirjanto, T., Zhao, Y. (2020) Forecasting Value at Risk via intra-day return curves. International Journal of Forecasting. <doi:10.1016/j.ijforecast.2019.10.006>.
+Rice, G., Wirjanto, T., Zhao, Y. (2020) Forecasting Value at Risk via intra-day return curves. International Journal of Forecasting. <doi:10.1016/j.ijforecast.2019.10.006>.\cr
 }
 \seealso{
 \code{\link{est.fArch}} \code{\link{est.fGarch}} \code{\link{est.fGarchx}} \code{\link{gof.fgarch}}

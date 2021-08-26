@@ -29,8 +29,8 @@
 #' ocidr = fcurve$ocidr
 #'
 #' @references
-#' Gabrys, R., Horvath, L., Kokoszka, P. (2010). Tests for error correlation in the functional linear model. Journal of the American Statistical Association, 105(491), 1113-1125. <doi:10.1198/jasa.2010.tm09794>.
-#' Rice, G., Wirjanto, T., Zhao, Y. (2020). Forecasting Value at Risk via Intra-Day Return Curves. International Journal of Forecasting. <doi:10.1016/j.ijforecast.2019.10.006>.
+#' Gabrys, R., Horvath, L., Kokoszka, P. (2010). Tests for error correlation in the functional linear model. Journal of the American Statistical Association, 105(491), 1113-1125. <doi:10.1198/jasa.2010.tm09794>.\cr
+#' Rice, G., Wirjanto, T., Zhao, Y. (2020). Forecasting Value at Risk via Intra-Day Return Curves. International Journal of Forecasting. <doi:10.1016/j.ijforecast.2019.10.006>.\cr
 intra.return <- function(yd){
   grid_point=nrow(yd)
   N=ncol(yd)
@@ -92,8 +92,8 @@ intra.return <- function(yd){
 #' tve = dt$tve
 #'
 #' @references
-#' Cerovecki, C., Francq, C., Hormann, S., Zakoian, J. M. (2019). Functional GARCH models: The quasi-likelihood approach and its applications. Journal of Econometrics. 209(2), 353-375. <doi:10.1016/j.jeconom.2019.01.006>.
-#'
+#' Cerovecki, C., Francq, C., Hormann, S., Zakoian, J. M. (2019). Functional GARCH models: The quasi-likelihood approach and its applications. Journal of Econometrics. 209(2), 353-375. <doi:10.1016/j.jeconom.2019.01.006>.\cr
+#' Rice, G., Wirjanto, T., Zhao, Y. (2021) Exploring volatility of crude oil intra-day return curves: a functional GARCH-X model. MPRA Paper No. 109231. <https://mpra.ub.uni-muenchen.de/109231>.\cr
 basis.est <- function(yd, M, type){
   grid_point=nrow(yd)
   N=ncol(yd)
@@ -228,49 +228,60 @@ basis.est <- function(yd, M, type){
            a = 0.75
            # the forecasting horizon
            h = 1
-           est_cov<-function(yd,h){
-             #h: forecast horizon
-             yd=yd-rowMeans(yd)
-             # dimension
-             n = ncol(yd)
-             # Calculate Autocovariance
-             C = yd%*%t(yd)/n
-             # Calcualte Crosscovariance
-             C1 = yd[,((h+1):n)]%*%t(yd[,(1:(n-h))])/(n-h)
-             return(list(C, C1))
-           }
+           est_cov<- function(yd,h){
+             if (class(yd) != 'matrix'){stop('Input data type is not matrix')}
+             # variance operator
+             N = ncol(yd)
+             C = (yd %*% t(yd)) / N
+             # covaraince operator
+             CC = (yd[,(h+1):N] %*% t(yd[,1:(N-h)])) / (N-h)
+             return(list(C,CC))}
 
-           squared_y = yd*yd
-           d = nrow(squared_y)
-           C_est=est_cov(squared_y,h)
-           C=C_est[[1]]
-           C1=C_est[[2]]
-           # Calculate Ca
-           Ca = C+a*diag(d)
-           # Find Predictive Factors
-           aaa = t(C1)%*%C1
+           K = nrow(yd)
+           # variance and corvariance operator
+           Temp1 = est_cov(yd,h)
+           C = as.matrix(data.frame(Temp1[1]))
+           CC = as.matrix(data.frame(Temp1[2]))
+           # empirical operator calculation
+           Ca = C + a * diag(K)
+           # Find the predictive factor
+           aaa = CC %*% t(CC)
+
            out = qz.geigen(aaa, B = Ca, only.values = FALSE)
            # eigen values and vectors
-           D1 = out$ALPHA
-           V1 = out$V
-           Dhat1=D1[1:M]
-           Vhat1=V1[,1:M]
-           VV=sqrt(1./diag(t(Vhat1)%*%Ca%*%Vhat1))
-           Vhat1=Vhat1%*%diag(VV)
-           R=Vhat1
-           F=C1%*%R
+           eigen.value = out$ALPHA
+           eigen.vector = out$V
+
+           # order and sort the eigen value
+           id = order(eigen.value,decreasing=TRUE)
+           eigen.value = sort(eigen.value,decreasing=TRUE)
+           eigen.vector.new = eigen.vector[,id]
+
+           # Final estimation
+           eigen.value.hat = eigen.value[1:M]
+           eigen.vector.hat = eigen.vector.new[,1:M]
+
+           vv = sqrt(1/(diag(t(eigen.vector.hat) %*% Ca %*% eigen.vector.hat)))
+           vv.matrix = diag(0,length(vv),length(vv))
+           diag(vv.matrix) = vv
+
+           eigen.vector.hat = eigen.vector.hat %*% vv.matrix
+           R = eigen.vector.hat
+           FF = CC %*% R
            # truncate the negative part
-           if(any(F[,1]<0)==TRUE){
-             F=-F}
-           F[F<0]<-0
-           tve=as.vector(rep(NA,length(D1)))
-           for (i in 1:length(D1)){
-             tve[i]=D1[i]/sum(D1)
+           if(any(FF[,1]<0)==TRUE){
+             FF[,1]=-FF[,1]}
+           if(any(FF[,2]<0)==TRUE){
+             FF[,2]=-FF[,2]}
+           FF[FF<0]<-0
+
+           tve=as.vector(rep(NA,length(eigen.value)))
+           for (i in 1:length(eigen.value)){
+             tve[i]=eigen.value[i]/sum(eigen.value)
            }
-           basis1 = F
+           basis1 = FF
          },
          stop("Enter something to switch me!"))
   return(list(basis = basis1, tve = tve))
 }
-
 

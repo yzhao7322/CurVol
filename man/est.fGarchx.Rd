@@ -51,6 +51,9 @@ garchx_est = est.fGarchx(fdy, fdx, basis_est[,1])
 }
 
 }
+\references{
+Rice, G., Wirjanto, T., Zhao, Y. (2021) Exploring volatility of crude oil intra-day return curves: a functional GARCH-X model. MPRA Paper No. 109231. <https://mpra.ub.uni-muenchen.de/109231>. Cerovecki, C., Francq, C., Hormann, S., Zakoian, J. M. (2019). Functional GARCH models: The quasi-likelihood approach and its applications. Journal of Econometrics. 209(2), 353-375. <doi:10.1016/j.jeconom.2019.01.006>.\cr
+}
 \seealso{
 \code{\link{est.fArch}} \code{\link{est.fGarch}} \code{\link{diagnostic.fGarch}}
 }

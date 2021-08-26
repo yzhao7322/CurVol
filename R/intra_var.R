@@ -52,7 +52,7 @@
 #' }
 #'
 #' @references
-#' Rice, G., Wirjanto, T., Zhao, Y. (2020). Forecasting Value at Risk via intra-day return curves. International Journal of Forecasting. <doi:10.1016/j.ijforecast.2019.10.006>.
+#' Rice, G., Wirjanto, T., Zhao, Y. (2020). Forecasting Value at Risk via intra-day return curves. International Journal of Forecasting. <doi:10.1016/j.ijforecast.2019.10.006>.\cr
 var.forecast <- function(yd,sigma_pred,error_fit,quantile_v,Method){
   # a function to resample curve data with replacement.
   resmp <- function(data,boot_N,boot_in_N){
@@ -157,7 +157,7 @@ var.forecast <- function(yd,sigma_pred,error_fit,quantile_v,Method){
 #' @seealso \code{\link{var.forecast}} \code{\link{var.backtest}}
 #'
 #' @references
-#' Rice, G., Wirjanto, T., Zhao, Y. (2020). Forecasting Value at Risk via intra-day return curves. International Journal of Forecasting. <doi:10.1016/j.ijforecast.2019.10.006>.
+#' Rice, G., Wirjanto, T., Zhao, Y. (2020). Forecasting Value at Risk via intra-day return curves. International Journal of Forecasting. <doi:10.1016/j.ijforecast.2019.10.006>.\cr
 var.vio <- function(yd,var_curve){
   if( ncol(yd)!=ncol(var_curve) ) warning('the number of observations must match for calculating the violation process!')
   point_grid=nrow(yd)
@@ -229,9 +229,7 @@ var.vio <- function(yd,var_curve){
 #' pvalues$independent
 #' }
 #' @references
-#' Christoffersen, P. (2010). Backtesting. Encyclopedia of Quantitative Finance, Wiley. <doi:10.1002/9780470061602.eqf15018>.
-#' Kokoszka, P., Rice, G., Shang, H. L. (2017). Inference for the autocovariance of a functional time series under conditional heteroscedasticity. Journal of Multivariate Analysis, 162, 32-50. <doi:10.1016/j.jmva.2017.08.004>.
-#' Rice, G., Wirjanto, T., Zhao, Y. (2020). Forecasting Value at Risk via intra-day return curves. International Journal of Forecasting. <doi:10.1016/j.ijforecast.2019.10.006>.
+#' Rice, G., Wirjanto, T., Zhao, Y. (2020). Forecasting Value at Risk via intra-day return curves. International Journal of Forecasting. <doi:10.1016/j.ijforecast.2019.10.006>.\cr
 #'
 var.backtest <- function(vio, tau, K=NULL){
   #########################

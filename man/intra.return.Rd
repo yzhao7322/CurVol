@@ -40,6 +40,6 @@ ocidr = fcurve$ocidr
 
 }
 \references{
-Gabrys, R., Horvath, L., Kokoszka, P. (2010). Tests for error correlation in the functional linear model. Journal of the American Statistical Association, 105(491), 1113-1125. <doi:10.1198/jasa.2010.tm09794>.
-Rice, G., Wirjanto, T., Zhao, Y. (2020). Forecasting Value at Risk via Intra-Day Return Curves. International Journal of Forecasting. <doi:10.1016/j.ijforecast.2019.10.006>.
+Gabrys, R., Horvath, L., Kokoszka, P. (2010). Tests for error correlation in the functional linear model. Journal of the American Statistical Association, 105(491), 1113-1125. <doi:10.1198/jasa.2010.tm09794>.\cr
+Rice, G., Wirjanto, T., Zhao, Y. (2020). Forecasting Value at Risk via Intra-Day Return Curves. International Journal of Forecasting. <doi:10.1016/j.ijforecast.2019.10.006>.\cr
 }

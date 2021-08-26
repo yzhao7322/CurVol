@@ -66,9 +66,7 @@ pvalues$independent
 }
 }
 \references{
-Christoffersen, P. (2010). Backtesting. Encyclopedia of Quantitative Finance, Wiley. <doi:10.1002/9780470061602.eqf15018>.
-Kokoszka, P., Rice, G., Shang, H. L. (2017). Inference for the autocovariance of a functional time series under conditional heteroscedasticity. Journal of Multivariate Analysis, 162, 32-50. <doi:10.1016/j.jmva.2017.08.004>.
-Rice, G., Wirjanto, T., Zhao, Y. (2020). Forecasting Value at Risk via intra-day return curves. International Journal of Forecasting. <doi:10.1016/j.ijforecast.2019.10.006>.
+Rice, G., Wirjanto, T., Zhao, Y. (2020). Forecasting Value at Risk via intra-day return curves. International Journal of Forecasting. <doi:10.1016/j.ijforecast.2019.10.006>.\cr
 }
 \seealso{
 \code{\link{var.forecast}} \code{\link{var.vio}}
