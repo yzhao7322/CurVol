@@ -33,7 +33,8 @@ Rice, G., Wirjanto, T., Zhao, Y. (2020) Forecasting Value at Risk via
 intra-day return curves. International Journal of Forecasting.
 <doi:/10.1016/j.ijforecast.2019.10.006>.
 
-Rice, G., Wirjanto, T., Zhao, Y. (2021) Exploring volatility of crude oil intra-day return curves: a functional GARCH-X model. MPRA Paper No. 109231. <https://mpra.ub.uni-muenchen.de/109231>. 
+Rice,G., Wirjanto, T., Zhao, Y. (2021) Exploring volatility of crude oil
+intra-day return curves: a functional GARCH-X model. MPRA Paper No.109231. <https://mpra.ub.uni-muenchen.de/109231>.
 
 ## Installation
 
