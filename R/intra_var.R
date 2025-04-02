@@ -242,7 +242,7 @@ var.backtest <- function(vio, tau, K=NULL){
     int_approx=function(x){
       temp_n=NROW(x)
       return((1/temp_n)*sum(x))}
-    Tn=n*int_approx(colMeans(z)-tau)^2
+    Tn=n*int_approx(rowMeans(z)-tau)^2
     return(Tn)
   }
   # get the critical values
@@ -273,7 +273,7 @@ var.backtest <- function(vio, tau, K=NULL){
 
     lim_sum=0
     for (j in 1:length(vect)){
-      lim_sum=lim_sum+vect[j]*rnorm(cv_N,mean=0,sd=1)}
+      lim_sum=lim_sum+vect[j]*rnorm(cv_N,mean=0,sd=1)^2}
 
     cv=quantile(lim_sum,probs=c(0.90,0.95,0.99))
     return(list(cv,lim_sum))
